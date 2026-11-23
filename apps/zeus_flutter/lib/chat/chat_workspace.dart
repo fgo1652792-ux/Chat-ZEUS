@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../design.dart';
 import '../providers/provider_protocol.dart';
@@ -359,13 +361,30 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
         case 'trash':
           await _repo.trash(thread.id, !thread.deleted);
         case 'copy':
+        case 'share':
           final messages = await _repo.messages(thread.id);
           final transcript = messages
               .map((m) => '**${m.role}**\n\n${m.text}')
               .join('\n\n---\n\n');
-          await Clipboard.setData(
-            ClipboardData(text: '# ${thread.title}\n\n$transcript'),
-          );
+          final markdown = '# ${thread.title}\n\n$transcript';
+          if (action == 'copy') {
+            await Clipboard.setData(ClipboardData(text: markdown));
+          } else if (mounted) {
+            final window = context.findRenderObject() as RenderBox;
+            final origin = window.localToGlobal(Offset.zero) & window.size;
+            await SharePlus.instance.share(
+              ShareParams(
+                files: [
+                  XFile.fromData(
+                    utf8.encode(markdown),
+                    mimeType: 'text/markdown',
+                  ),
+                ],
+                fileNameOverrides: ['ZeusChat-${thread.id.substring(0, 8)}.md'],
+                sharePositionOrigin: origin,
+              ),
+            );
+          }
           return;
       }
       if (mounted && thread.id == _thread?.id) {
@@ -546,6 +565,16 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
                                   context,
                                   'Copy transcript',
                                   'نسخ المحادثة',
+                                ),
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: 'share',
+                              child: Text(
+                                localize(
+                                  context,
+                                  'Export Markdown',
+                                  'تصدير Markdown',
                                 ),
                               ),
                             ),
