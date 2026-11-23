@@ -8,7 +8,7 @@
     "must_integrate_original": true
   },
   "execution_policy": "autonomous_sequential_no_approval_between_phases",
-  "current_phase": "01",
+  "current_phase": "07",
   "phases": [
     {
       "id": "00",
@@ -54,44 +54,94 @@
     {
       "id": "01",
       "title": "تشغيل الزجاج وشاشة الترحيب",
-      "status": "in_progress",
+      "status": "passed",
       "started_at": "2026-11-23T19:34:45.818550+00:00",
-      "finished_at": null,
-      "commit_sha": null,
-      "tests": [],
+      "finished_at": "2026-11-23T20:00:13.348737+00:00",
+      "commit_sha": "64a0aac74c86eb7daa936281b134a9c337c9fabe",
+      "tests": [
+        "iPhone and iPad simulator launch and glass setting integration passed. Original iPad screenshot and logs inspected. Web renderer compatibility verified by a release build."
+      ],
       "artifacts": [],
       "blockers": [],
       "next_action": "Validate launch and glass settings on both iOS simulators.",
-      "github_action_runs": [],
+      "github_action_runs": [
+        {
+          "name": "Zeus Chat | Flutter Quality",
+          "run_id": 45250949828,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45250949828",
+          "conclusion": "success"
+        },
+        {
+          "name": "Zeus Chat | iOS Simulator Smoke",
+          "run_id": 45250949764,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45250949764",
+          "conclusion": "success"
+        },
+        {
+          "name": "Zeus Chat | Unsigned iOS IPA",
+          "run_id": 45250949655,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45250949655",
+          "conclusion": "success"
+        }
+      ],
       "ios_simulator": {
-        "status": "not_ready",
-        "device": null,
+        "status": "passed",
+        "device": "iPhone + iPad",
         "runtime": null,
-        "install": null,
-        "launch": null,
-        "integration": null,
-        "screenshot": null
+        "install": "passed",
+        "launch": "passed",
+        "integration": "passed",
+        "screenshot": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45250949764"
       },
       "unsigned_ipa": {
-        "status": "not_ready",
-        "artifact_url": null,
-        "sha256": null,
-        "ipa_contains_payload": null
+        "status": "passed",
+        "artifact_url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45250949655/artifacts/14857206322",
+        "sha256": "610cd34b29cfa586cdc0c78b29ce50366a414c485f4b6c8a7f109d5aeaf2419f",
+        "ipa_contains_payload": true
       },
-      "qa_reports": []
+      "qa_reports": [
+        "docs/qa/phase-01.md"
+      ],
+      "artifact_checksums": [
+        {
+          "filename": "ZeusChat-unsigned-64a0aac74c86.ipa",
+          "sha256": "610cd34b29cfa586cdc0c78b29ce50366a414c485f4b6c8a7f109d5aeaf2419f"
+        }
+      ]
     },
     {
       "id": "02",
       "title": "الهيكل والتخزين والتنقل",
-      "status": "not_started",
-      "started_at": null,
+      "status": "in_progress",
+      "started_at": "2026-11-23T20:00:13.348737+00:00",
       "finished_at": null,
-      "commit_sha": null,
-      "tests": [],
+      "commit_sha": "6abeca8f7c74fd72fcbde6673086fd0278c2daf4",
+      "tests": [
+        "SQLite settings and onboarding persist across a restart. The first launch has a storage error and retry state."
+      ],
       "artifacts": [],
       "blockers": [],
       "next_action": null,
-      "github_action_runs": [],
+      "github_action_runs": [
+        {
+          "name": "Zeus Chat | Flutter Quality",
+          "run_id": 45253452601,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45253452601",
+          "conclusion": "success"
+        },
+        {
+          "name": "Zeus Chat | Unsigned iOS IPA",
+          "run_id": 45253452559,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45253452559",
+          "conclusion": "queued"
+        },
+        {
+          "name": "Zeus Chat | iOS Simulator Smoke",
+          "run_id": 45253452369,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45253452369",
+          "conclusion": "queued"
+        }
+      ],
       "ios_simulator": {
         "status": "not_ready",
         "device": null,
@@ -107,20 +157,43 @@
         "sha256": null,
         "ipa_contains_payload": null
       },
-      "qa_reports": []
+      "qa_reports": [
+        "docs/qa/phase-02.md"
+      ]
     },
     {
       "id": "03",
       "title": "المزوّدون ومفاتيح API",
-      "status": "not_started",
-      "started_at": null,
+      "status": "in_progress",
+      "started_at": "2026-11-23T20:00:13.348737+00:00",
       "finished_at": null,
-      "commit_sha": null,
-      "tests": [],
+      "commit_sha": "6527c1b410c5ecc56ffb14be3f194ef9224f9bd7",
+      "tests": [
+        "Provider profiles persist in SQLite and secure credentials are stored separately. Protocol fixtures cover authentication and rate-limit errors."
+      ],
       "artifacts": [],
       "blockers": [],
       "next_action": null,
-      "github_action_runs": [],
+      "github_action_runs": [
+        {
+          "name": "Zeus Chat | Flutter Quality",
+          "run_id": 45253569404,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45253569404",
+          "conclusion": "success"
+        },
+        {
+          "name": "Zeus Chat | iOS Simulator Smoke",
+          "run_id": 45253569288,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45253569288",
+          "conclusion": "queued"
+        },
+        {
+          "name": "Zeus Chat | Unsigned iOS IPA",
+          "run_id": 45253569268,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45253569268",
+          "conclusion": "in_progress"
+        }
+      ],
       "ios_simulator": {
         "status": "not_ready",
         "device": null,
@@ -136,20 +209,43 @@
         "sha256": null,
         "ipa_contains_payload": null
       },
-      "qa_reports": []
+      "qa_reports": [
+        "docs/qa/phase-03.md"
+      ]
     },
     {
       "id": "04",
       "title": "اختيار النماذج",
-      "status": "not_started",
-      "started_at": null,
+      "status": "in_progress",
+      "started_at": "2026-11-23T20:00:13.348737+00:00",
       "finished_at": null,
-      "commit_sha": null,
-      "tests": [],
+      "commit_sha": "cdde2f216b6f1b488159d4308396dab53059e44f",
+      "tests": [
+        "Provider model discovery, capability metadata, saved favorites, and a manual model ID are available."
+      ],
       "artifacts": [],
       "blockers": [],
       "next_action": null,
-      "github_action_runs": [],
+      "github_action_runs": [
+        {
+          "name": "Zeus Chat | Flutter Quality",
+          "run_id": 45253711609,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45253711609",
+          "conclusion": "success"
+        },
+        {
+          "name": "Zeus Chat | iOS Simulator Smoke",
+          "run_id": 45253711514,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45253711514",
+          "conclusion": "queued"
+        },
+        {
+          "name": "Zeus Chat | Unsigned iOS IPA",
+          "run_id": 45253711510,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45253711510",
+          "conclusion": "queued"
+        }
+      ],
       "ios_simulator": {
         "status": "not_ready",
         "device": null,
@@ -165,20 +261,43 @@
         "sha256": null,
         "ipa_contains_payload": null
       },
-      "qa_reports": []
+      "qa_reports": [
+        "docs/qa/phase-04.md"
+      ]
     },
     {
       "id": "05",
       "title": "محادثة ببث لحظي حقيقي",
-      "status": "not_started",
-      "started_at": null,
+      "status": "in_progress",
+      "started_at": "2026-11-23T20:00:13.348737+00:00",
       "finished_at": null,
-      "commit_sha": null,
-      "tests": [],
+      "commit_sha": "e0c64951193e4b1d776a1163911117f74436afe7",
+      "tests": [
+        "The app consumes native SSE or NDJSON. A loopback server verifies early UTF-8 chunks and actual cancellation with partial SQLite persistence."
+      ],
       "artifacts": [],
       "blockers": [],
       "next_action": null,
-      "github_action_runs": [],
+      "github_action_runs": [
+        {
+          "name": "Zeus Chat | iOS Simulator Smoke",
+          "run_id": 45253771925,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45253771925",
+          "conclusion": "queued"
+        },
+        {
+          "name": "Zeus Chat | Unsigned iOS IPA",
+          "run_id": 45253771829,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45253771829",
+          "conclusion": "queued"
+        },
+        {
+          "name": "Zeus Chat | Flutter Quality",
+          "run_id": 45253771763,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45253771763",
+          "conclusion": "success"
+        }
+      ],
       "ios_simulator": {
         "status": "not_ready",
         "device": null,
@@ -194,20 +313,43 @@
         "sha256": null,
         "ipa_contains_payload": null
       },
-      "qa_reports": []
+      "qa_reports": [
+        "docs/qa/phase-05.md"
+      ]
     },
     {
       "id": "06",
       "title": "سجل المحادثات والبحث والفروع",
-      "status": "not_started",
-      "started_at": null,
+      "status": "in_progress",
+      "started_at": "2026-11-23T20:00:13.348737+00:00",
       "finished_at": null,
-      "commit_sha": null,
-      "tests": [],
+      "commit_sha": "e2a833499f25a53939244eb922d371fd9a2b920b",
+      "tests": [
+        "Search, pin, archive, trash and restore, message branches, and Markdown transcript sharing are wired. The runtime test verifies edited branches preserve the original."
+      ],
       "artifacts": [],
       "blockers": [],
       "next_action": null,
-      "github_action_runs": [],
+      "github_action_runs": [
+        {
+          "name": "Zeus Chat | Unsigned iOS IPA",
+          "run_id": 45254378580,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45254378580",
+          "conclusion": "queued"
+        },
+        {
+          "name": "Zeus Chat | iOS Simulator Smoke",
+          "run_id": 45254378512,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45254378512",
+          "conclusion": "queued"
+        },
+        {
+          "name": "Zeus Chat | Flutter Quality",
+          "run_id": 45254378498,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45254378498",
+          "conclusion": "success"
+        }
+      ],
       "ios_simulator": {
         "status": "not_ready",
         "device": null,
@@ -223,19 +365,21 @@
         "sha256": null,
         "ipa_contains_payload": null
       },
-      "qa_reports": []
+      "qa_reports": [
+        "docs/qa/phase-06.md"
+      ]
     },
     {
       "id": "07",
       "title": "رندر Markdown والعناصر الغنية",
-      "status": "not_started",
-      "started_at": null,
+      "status": "in_progress",
+      "started_at": "2026-11-23T20:00:13.348737+00:00",
       "finished_at": null,
       "commit_sha": null,
       "tests": [],
       "artifacts": [],
       "blockers": [],
-      "next_action": null,
+      "next_action": "Run rich message layout and safe-link tests.",
       "github_action_runs": [],
       "ios_simulator": {
         "status": "not_ready",
