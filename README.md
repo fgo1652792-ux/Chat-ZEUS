@@ -15,7 +15,8 @@ flutter run
 ```
 
 For the browser, generate the SQLite worker and WASM files before starting
-Flutter.
+Flutter. The release build caches the app shell and local SQLite resources
+after the first successful load.
 
 ```sh
 dart run sqflite_common_ffi_web:setup
