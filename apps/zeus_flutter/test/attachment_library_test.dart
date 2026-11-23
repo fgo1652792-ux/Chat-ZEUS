@@ -23,7 +23,11 @@ void main() {
     final library = AttachmentLibrary(store);
     final file = await library.importFile(
       first.id,
-      XFile.fromData(utf8.encode('city,count\nبغداد,2'), name: 'budget.csv'),
+      XFile.fromData(
+        utf8.encode('city,count\nبغداد,2'),
+        path: 'budget.csv',
+        name: 'budget.csv',
+      ),
     );
     expect((await library.list(first.id)).single.name, 'budget.csv');
     expect(await library.list(second.id), isEmpty);
@@ -42,7 +46,11 @@ void main() {
     await expectLater(
       library.importFile(
         first.id,
-        XFile.fromData(utf8.encode('wrong'), name: 'invalid.pdf'),
+        XFile.fromData(
+          utf8.encode('wrong'),
+          path: 'invalid.pdf',
+          name: 'invalid.pdf',
+        ),
       ),
       throwsA(isA<AttachmentException>()),
     );
