@@ -357,8 +357,9 @@ class _BarChart extends StatelessWidget {
       if (json is! List || json.isEmpty || json.length > 32) return null;
       final rows = <(String, num)>[];
       for (final item in json) {
-        if (item is! Map || item['label'] is! String || item['value'] is! num)
+        if (item is! Map || item['label'] is! String || item['value'] is! num) {
           return null;
+        }
         final label = item['label'] as String;
         final val = item['value'] as num;
         if (label.isEmpty || label.length > 100 || !val.isFinite || val < 0.0) {
