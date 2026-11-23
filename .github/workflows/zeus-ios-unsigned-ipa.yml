@@ -1,0 +1,59 @@
+name: Zeus Chat | Unsigned iOS IPA
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, feature/zeus-chat-complete]
+    paths: ['apps/**', 'packages/**', '.github/workflows/**']
+permissions:
+  contents: read
+jobs:
+  unsigned-ipa:
+    runs-on: macos-latest
+    timeout-minutes: 80
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.2'
+          channel: stable
+          cache: true
+      - name: Check environment
+        run: |
+          xcodebuild -version
+          flutter doctor -v
+      - name: Restore dependencies
+        working-directory: apps/zeus_flutter
+        run: flutter pub get
+      - name: Device release build without signing
+        working-directory: apps/zeus_flutter
+        run: flutter build ios --release --no-codesign
+      - name: Package an actual device .app as unsigned IPA
+        working-directory: apps/zeus_flutter
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP='build/ios/iphoneos/Runner.app'
+          test -f "$APP/Info.plist"
+          test -f "$APP/Runner"
+          /usr/libexec/PlistBuddy -c 'Print DTPlatformName' "$APP/Info.plist" | grep -Fx iphoneos
+          xcrun vtool -show-build "$APP/Runner" | grep -Eq 'platform +IOS$'
+          OUT="$GITHUB_WORKSPACE/dist"
+          mkdir -p "$OUT" build/unsigned-stage/Payload
+          /usr/bin/ditto "$APP" build/unsigned-stage/Payload/Runner.app
+          SHORT_SHA="${GITHUB_SHA:0:12}"
+          IPA="$OUT/ZeusChat-unsigned-$SHORT_SHA.ipa"
+          (cd build/unsigned-stage && /usr/bin/ditto -c -k --keepParent Payload "$IPA")
+          unzip -t "$IPA"
+          unzip -Z1 "$IPA" > build/unsigned-stage/entries.txt
+          grep -Fx 'Payload/Runner.app/Info.plist' build/unsigned-stage/entries.txt
+          grep -Fx 'Payload/Runner.app/Runner' build/unsigned-stage/entries.txt
+          (cd "$OUT" && shasum -a 256 "$(basename "$IPA")" > SHA256SUMS.txt)
+          printf '%s\n' 'Unsigned device build. Normal iOS installation requires a suitable later signing step.' > "$OUT/README-UNSIGNED.txt"
+          ls -lh "$OUT"
+      - name: Upload unsigned IPA and checksum
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZeusChat-unsigned-ipa
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30

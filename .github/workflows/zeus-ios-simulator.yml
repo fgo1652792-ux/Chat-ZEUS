@@ -1,0 +1,83 @@
+name: Zeus Chat | iOS Simulator Smoke
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, feature/zeus-chat-complete]
+    paths: ['apps/**', 'packages/**', '.github/workflows/**']
+permissions:
+  contents: read
+jobs:
+  ios-simulator:
+    runs-on: macos-latest
+    timeout-minutes: 80
+    strategy:
+      fail-fast: false
+      matrix:
+        device: [iPhone, iPad]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.2'
+          channel: stable
+          cache: true
+      - name: Record environment
+        run: |
+          xcodebuild -version
+          xcrun simctl list devices available
+          flutter doctor -v
+      - name: Dependencies
+        working-directory: apps/zeus_flutter
+        run: flutter pub get
+      - name: Pick and boot simulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          export DEVICE_KIND='${{ matrix.device }}'
+          xcrun simctl list devices available -j > devices.json
+          UDID="$(python3 -c 'import json, os; d=json.load(open("devices.json")); kind=os.environ["DEVICE_KIND"]; ids=[v["udid"] for runtime, devices in d["devices"].items() if "iOS" in runtime for v in devices if v.get("isAvailable") and kind in v.get("name","")]; print(ids[0] if ids else "")')"
+          if [[ -z "$UDID" ]]; then
+            echo "Missing ${DEVICE_KIND} runtime" | tee -a "$GITHUB_STEP_SUMMARY"
+            [[ "$DEVICE_KIND" == iPad ]] && exit 0
+            exit 1
+          fi
+          echo "SIM_UDID=$UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+      - name: Build simulator app
+        if: env.SIM_UDID != ''
+        working-directory: apps/zeus_flutter
+        run: flutter build ios --simulator --debug
+      - name: Install, launch and capture screenshot
+        if: env.SIM_UDID != ''
+        working-directory: apps/zeus_flutter
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/ci-evidence
+          APP='build/ios/iphonesimulator/Runner.app'
+          test -d "$APP"
+          xcrun simctl install "$SIM_UDID" "$APP"
+          BUNDLE_ID="$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "$APP/Info.plist")"
+          xcrun simctl launch "$SIM_UDID" "$BUNDLE_ID"
+          sleep 5
+          xcrun simctl io "$SIM_UDID" screenshot "build/ci-evidence/${{ matrix.device }}-launch.png"
+          xcrun simctl spawn "$SIM_UDID" launchctl list > build/ci-evidence/launchctl.txt
+          grep -F "$BUNDLE_ID" build/ci-evidence/launchctl.txt
+          xcrun simctl spawn "$SIM_UDID" log show --last 2m --predicate 'process == "Runner"' > build/ci-evidence/runner.log
+          cp "$GITHUB_WORKSPACE/devices.json" build/ci-evidence/devices.json
+      - name: Run integration smoke
+        if: env.SIM_UDID != ''
+        working-directory: apps/zeus_flutter
+        run: |
+          test -f integration_test/app_smoke_test.dart
+          set -o pipefail
+          flutter test integration_test/app_smoke_test.dart -d "$SIM_UDID" --reporter expanded 2>&1 | tee build/ci-evidence/integration.log
+      - name: Upload simulator evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-${{ matrix.device }}-${{ github.run_number }}
+          path: apps/zeus_flutter/build/ci-evidence/
+          if-no-files-found: warn
+          retention-days: 14

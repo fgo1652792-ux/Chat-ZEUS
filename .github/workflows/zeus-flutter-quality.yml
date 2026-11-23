@@ -39,7 +39,7 @@ jobs:
       - name: Format and analyze app
         working-directory: apps/zeus_flutter
         run: |
-          dart format --output=none --set-exit-if-changed lib test
+          dart format --output=none --set-exit-if-changed lib test integration_test
           flutter analyze
       - name: App tests
         working-directory: apps/zeus_flutter
