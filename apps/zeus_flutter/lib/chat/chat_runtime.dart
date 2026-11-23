@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../projects/project_repository.dart';
 import '../providers/provider_client.dart';
 import '../providers/provider_protocol.dart';
 import '../providers/provider_repository.dart';
@@ -44,7 +45,10 @@ class ChatRuntime extends ChangeNotifier {
     var lastSave = DateTime.fromMillisecondsSinceEpoch(0);
     try {
       final previous = await repository.messages(thread.id);
+      final project = await ProjectRepository(repository.store)
+          .instructionsForThread(thread.id);
       final inputs = [
+        if (project.isNotEmpty) ChatInput('system', project),
         for (final message in previous)
           if (message.state == MessageState.completed)
             ChatInput(message.role, message.text),

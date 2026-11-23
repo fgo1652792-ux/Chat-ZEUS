@@ -25,7 +25,7 @@ void main() {
       'theme': 'light',
       'glass': 'false',
     });
-    expect(await store.db.getVersion(), 5);
+    expect(await store.db.getVersion(), 6);
     expect(await store.db.query('conversations'), isEmpty);
     expect(await store.db.query('messages'), isEmpty);
   });

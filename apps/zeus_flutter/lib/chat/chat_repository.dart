@@ -13,6 +13,7 @@ class ChatThread {
     required this.updatedAt,
     this.providerId,
     this.modelId,
+    this.projectId,
     this.archived = false,
     this.pinned = false,
     this.deleted = false,
@@ -24,6 +25,7 @@ class ChatThread {
   final int updatedAt;
   final String? providerId;
   final String? modelId;
+  final String? projectId;
   final bool archived;
   final bool pinned;
   final bool deleted;
@@ -35,6 +37,7 @@ class ChatThread {
     updatedAt: row['updated_at']! as int,
     providerId: row['provider_id'] as String?,
     modelId: row['model_id'] as String?,
+    projectId: row['project_id'] as String?,
     archived: row['archived'] == 1,
     pinned: row['pinned'] == 1,
     deleted: row['deleted'] == 1,
@@ -167,6 +170,9 @@ class ChatRepository {
   Future<void> setModel(String id, String providerId, String modelId) =>
       _update(id, {'provider_id': providerId, 'model_id': modelId});
 
+  Future<void> moveToProject(String id, String? project) =>
+      _update(id, {'project_id': project});
+
   Future<void> rename(String id, String title) => _update(id, {'title': title});
 
   Future<void> archive(String id, bool archived) =>
@@ -280,6 +286,7 @@ class ChatRepository {
         'created_at': _now,
         'updated_at': _now,
         'parent_thread': source.id,
+        'project_id': source.projectId,
         'parent_message': anchor.id,
       });
       final from = await tx.query(

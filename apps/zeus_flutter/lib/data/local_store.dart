@@ -16,7 +16,8 @@ class LocalStore {
     final db = await selected.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 5,
+        version: 6,
+        singleInstance: path != ':memory:',
         onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
         onCreate: migrate,
         onUpgrade: (db, from, to) => migrate(db, to, from: from),
@@ -121,6 +122,31 @@ class LocalStore {
           created_at INTEGER NOT NULL
         )
       ''');
+    }
+    if (from < 6 && to >= 6) {
+      final batch = db.batch();
+      batch.execute('''
+        CREATE TABLE projects (
+          id TEXT PRIMARY KEY NOT NULL,
+          name TEXT NOT NULL,
+          instructions TEXT NOT NULL
+        )
+      ''');
+      batch.execute('''
+        CREATE TABLE project_memories (
+          id TEXT PRIMARY KEY NOT NULL,
+          project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+          text TEXT NOT NULL,
+          created_at INTEGER NOT NULL
+        )
+      ''');
+      batch.execute(
+        'ALTER TABLE conversations ADD COLUMN project_id TEXT REFERENCES projects(id) ON DELETE SET NULL',
+      );
+      batch.execute(
+        'CREATE INDEX project_memories_project ON project_memories(project_id, created_at)',
+      );
+      await batch.commit(noResult: true);
     }
   }
 

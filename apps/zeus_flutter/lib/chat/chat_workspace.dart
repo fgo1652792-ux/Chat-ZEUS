@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import '../attachments/attachment_sheet.dart';
 import '../attachments/attachments.dart';
 import '../design.dart';
+import '../projects/project_repository.dart';
 import '../providers/provider_protocol.dart';
 import '../providers/provider_settings.dart';
 import '../rich/rich_message.dart';
@@ -458,6 +459,8 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
           await _repo.archive(thread.id, !thread.archived);
         case 'trash':
           await _repo.trash(thread.id, !thread.deleted);
+        case 'project':
+          await _moveToProject(thread);
         case 'copy':
         case 'share':
           final messages = await _repo.messages(thread.id);
@@ -492,6 +495,33 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
       await _refresh();
     } catch (_) {
       _showError();
+    }
+  }
+
+  Future<void> _moveToProject(ChatThread thread) async {
+    final projects = await ProjectRepository(_repo.store).list();
+    if (!mounted) return;
+    final choice = await showDialog<String>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text(localize(context, 'Move to project', 'نقل إلى مشروع')),
+        children: [
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(context, ''),
+            child: Text(
+              localize(context, 'Remove from project', 'إزالة من المشروع'),
+            ),
+          ),
+          for (final project in projects)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(context, project.id),
+              child: Text(project.name),
+            ),
+        ],
+      ),
+    );
+    if (choice != null) {
+      await _repo.moveToProject(thread.id, choice.isEmpty ? null : choice);
     }
   }
 
@@ -663,6 +693,16 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
                                   context,
                                   'Copy transcript',
                                   'نسخ المحادثة',
+                                ),
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: 'project',
+                              child: Text(
+                                localize(
+                                  context,
+                                  'Move to project',
+                                  'نقل إلى مشروع',
                                 ),
                               ),
                             ),

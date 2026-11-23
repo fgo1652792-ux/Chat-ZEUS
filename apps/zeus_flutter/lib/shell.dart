@@ -4,6 +4,9 @@ import 'package:ui/minirok_glass.dart';
 import 'chat/chat_runtime.dart';
 import 'chat/chat_workspace.dart';
 import 'design.dart';
+import 'projects/project_repository.dart';
+import 'projects/project_screen.dart';
+import 'projects/temporary_chat.dart';
 import 'providers/provider_settings.dart';
 import 'research/research_screen.dart';
 import 'studio/image_studio.dart';
@@ -328,6 +331,24 @@ class _Settings extends StatelessWidget {
               ZeusPane(
                 child: Column(
                   children: [
+                    _entry(
+                      context,
+                      Icons.folder_outlined,
+                      'Projects',
+                      'المشاريع',
+                      (_) => ProjectScreen(
+                        repository: ProjectRepository(
+                          shell.runtime.repository.store,
+                        ),
+                      ),
+                    ),
+                    _entry(
+                      context,
+                      Icons.timer_outlined,
+                      'Temporary chat',
+                      'محادثة مؤقتة',
+                      (_) => TemporaryChat(providers: shell.runtime.providers),
+                    ),
                     _entry(
                       context,
                       Icons.travel_explore,
