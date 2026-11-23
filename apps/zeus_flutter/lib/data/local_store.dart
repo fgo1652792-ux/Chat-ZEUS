@@ -16,7 +16,7 @@ class LocalStore {
     final db = await selected.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 2,
+        version: 3,
         onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
         onCreate: migrate,
         onUpgrade: (db, from, to) => migrate(db, to, from: from),
@@ -71,6 +71,27 @@ class LocalStore {
           manual_model TEXT NOT NULL DEFAULT ''
         )
       ''');
+    }
+    if (from < 3 && to >= 3) {
+      final batch = db.batch();
+      batch.execute("ALTER TABLE messages ADD COLUMN error_code TEXT");
+      batch.execute("ALTER TABLE messages ADD COLUMN input_tokens INTEGER");
+      batch.execute("ALTER TABLE messages ADD COLUMN output_tokens INTEGER");
+      batch.execute(
+        "ALTER TABLE conversations ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0",
+      );
+      batch.execute(
+        "ALTER TABLE conversations ADD COLUMN archived INTEGER NOT NULL DEFAULT 0",
+      );
+      batch.execute(
+        "ALTER TABLE conversations ADD COLUMN deleted INTEGER NOT NULL DEFAULT 0",
+      );
+      batch.execute("ALTER TABLE conversations ADD COLUMN parent_thread TEXT");
+      batch.execute("ALTER TABLE conversations ADD COLUMN parent_message TEXT");
+      batch.execute(
+        "CREATE INDEX chat_order ON conversations (deleted, archived, pinned DESC, updated_at DESC)",
+      );
+      await batch.commit(noResult: true);
     }
   }
 

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ui/minirok_glass.dart';
 
+import 'chat/chat_repository.dart';
+import 'chat/chat_runtime.dart';
 import 'data/local_store.dart';
 import 'providers/credentials.dart';
 import 'providers/provider_repository.dart';
@@ -33,6 +35,7 @@ class _ZeusAppState extends State<ZeusApp> {
   bool _storageError = false;
   LocalStore? _store;
   final _credentials = createCredentials();
+  ChatRuntime? _chat;
 
   @override
   void initState() {
@@ -45,12 +48,15 @@ class _ZeusAppState extends State<ZeusApp> {
     try {
       db = await (widget.openStore ?? LocalStore.open)();
       final preferences = await db.preferences();
+      final history = ChatRepository(db);
+      await history.recoverInterrupted();
       if (!mounted) {
         await db.close();
         return;
       }
       setState(() {
         _store = db;
+        _chat = ChatRuntime(history, ProviderRepository(db!, _credentials));
         _themeMode = switch (preferences['theme']) {
           'light' => ThemeMode.light,
           'system' => ThemeMode.system,
@@ -80,6 +86,7 @@ class _ZeusAppState extends State<ZeusApp> {
 
   @override
   void dispose() {
+    _chat?.dispose();
     unawaited(_store?.close());
     super.dispose();
   }
@@ -110,6 +117,7 @@ class _ZeusAppState extends State<ZeusApp> {
                 child: _storageError
                     ? FilledButton(
                         onPressed: () async {
+                          _chat?.dispose();
                           await _store?.close();
                           if (!mounted) return;
                           setState(() {
@@ -132,7 +140,7 @@ class _ZeusAppState extends State<ZeusApp> {
               themeMode: _themeMode,
               locale: _locale,
               onboarded: _onboarded,
-              providers: ProviderRepository(store, _credentials),
+              runtime: _chat!,
               onOnboarded: () =>
                   _save('onboarded', 'true', () => _onboarded = true),
               onGlassChanged: (value) =>
