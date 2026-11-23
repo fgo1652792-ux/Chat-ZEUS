@@ -1,0 +1,154 @@
+openapi: 3.1.0
+info:
+  title: Zeus Hub
+  version: 0.1.0
+security:
+  - bearerAuth: []
+paths:
+  /health:
+    get:
+      security: []
+      responses:
+        '200': {description: Database connection healthy}
+  /v1/auth/register:
+    post:
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, inviteCode]
+              properties:
+                email: {type: string, format: email}
+                password: {type: string, minLength: 12}
+                inviteCode: {type: string}
+      responses:
+        '201': {description: Access token and refresh token}
+        '403': {description: Registration code rejected}
+  /v1/auth/login:
+    post:
+      security: []
+      responses:
+        '200': {description: Access token and refresh token issued for email and password}
+        '401': {description: Invalid credentials}
+  /v1/auth/refresh:
+    post:
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Refresh'}
+      responses:
+        '200': {description: Rotated session tokens}
+        '401': {description: Invalid or expired session}
+  /v1/auth/logout:
+    post:
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Refresh'}
+      responses:
+        '204': {description: Session revoked}
+  /v1/account:
+    delete:
+      responses:
+        '204': {description: Account data removed}
+  /v1/projects:
+    get:
+      responses:
+        '200': {description: Current account's project records}
+  /v1/sync/batch:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cursor: {type: string, pattern: '^(0|[1-9][0-9]{0,18})$'}
+                changes:
+                  type: array
+                  maxItems: 25
+                  items: {$ref: '#/components/schemas/Change'}
+      responses:
+        '200': {description: Applied changes, version conflicts, and the next page of account records}
+  /v1/jobs:
+    get:
+      responses:
+        '200': {description: Current account's schedule}
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [kind, runAt]
+              properties:
+                kind: {const: workspace_summary}
+                runAt: {type: string, format: date-time}
+                intervalSeconds: {type: integer, minimum: 60}
+      responses:
+        '201': {description: Job scheduled}
+  /v1/jobs/{id}/runs:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      responses:
+        '200': {description: Persisted job results}
+        '404': {description: Job unavailable}
+  /v1/jobs/{id}/cancel:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      responses:
+        '200': {description: Job cancelled}
+        '404': {description: Job unavailable}
+  /v1/files:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, content, sha256]
+              properties:
+                name: {type: string, maxLength: 200}
+                content: {type: string, contentEncoding: base64}
+                sha256: {type: string, pattern: '^[a-f0-9]{64}$'}
+      responses:
+        '201': {description: Bounded file stored and SHA-256 verified}
+        '422': {description: File size or hash mismatch}
+  /v1/files/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      responses:
+        '200': {description: File contents}
+        '404': {description: File unavailable}
+components:
+  securitySchemes:
+    bearerAuth: {type: http, scheme: bearer}
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+  schemas:
+    Refresh:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken: {type: string, minLength: 43, maxLength: 43}
+    Change:
+      type: object
+      required: [id, kind, version, body]
+      properties:
+        id: {type: string, format: uuid}
+        kind: {enum: [project, conversation, settings]}
+        version: {type: integer, minimum: 0}
+        deleted: {type: boolean, default: false}
+        body:
+          type: [object, 'null']

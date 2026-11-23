@@ -4,6 +4,7 @@ import 'package:ui/minirok_glass.dart';
 import 'chat/chat_runtime.dart';
 import 'chat/chat_workspace.dart';
 import 'design.dart';
+import 'hub/hub_screen.dart';
 import 'projects/project_repository.dart';
 import 'projects/project_screen.dart';
 import 'projects/temporary_chat.dart';
@@ -332,6 +333,16 @@ class _Settings extends StatelessWidget {
               ZeusPane(
                 child: Column(
                   children: [
+                    _entry(
+                      context,
+                      Icons.sync,
+                      'Zeus Hub',
+                      'Zeus Hub',
+                      (_) => HubScreen(
+                        history: shell.runtime.repository,
+                        credentials: shell.runtime.providers.credentials,
+                      ),
+                    ),
                     _entry(
                       context,
                       Icons.extension_outlined,

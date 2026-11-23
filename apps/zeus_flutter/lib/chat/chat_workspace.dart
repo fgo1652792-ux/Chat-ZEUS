@@ -117,6 +117,9 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
   void didUpdateWidget(covariant ChatWorkspace oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!widget.interactive && oldWidget.interactive) unawaited(_voice.stop());
+    if (widget.interactive && !oldWidget.interactive) {
+      unawaited(_refresh().catchError((Object _) => _showError()));
+    }
   }
 
   @override
