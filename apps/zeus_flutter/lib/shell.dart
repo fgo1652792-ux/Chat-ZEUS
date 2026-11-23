@@ -10,6 +10,7 @@ import 'projects/temporary_chat.dart';
 import 'providers/provider_settings.dart';
 import 'research/research_screen.dart';
 import 'studio/image_studio.dart';
+import 'tools/tools_screen.dart';
 
 class ZeusShell extends StatefulWidget {
   const ZeusShell({
@@ -331,6 +332,13 @@ class _Settings extends StatelessWidget {
               ZeusPane(
                 child: Column(
                   children: [
+                    _entry(
+                      context,
+                      Icons.extension_outlined,
+                      'MCP tools',
+                      'أدوات MCP',
+                      (_) => const ToolsScreen(),
+                    ),
                     _entry(
                       context,
                       Icons.folder_outlined,
