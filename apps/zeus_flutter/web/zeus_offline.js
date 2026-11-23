@@ -2,7 +2,7 @@
 
 const scope = new URL(self.registration.scope);
 const cachePrefix = 'zeus-shell:' + scope.pathname + ':';
-const cacheName = cachePrefix + '1';
+const cacheName = cachePrefix + '2';
 const shell = [
   './',
   'index.html',
@@ -16,10 +16,14 @@ const shell = [
   'canvaskit/canvaskit.wasm',
   'canvaskit/chromium/canvaskit.js',
   'canvaskit/chromium/canvaskit.wasm',
+  'assets/AssetManifest.bin',
   'assets/AssetManifest.bin.json',
   'assets/FontManifest.json',
   'assets/fonts/MaterialIcons-Regular.otf',
   'assets/assets/brand/zeus.png',
+  'assets/packages/pdfrx/assets/pdfium.wasm',
+  'assets/packages/pdfrx/assets/pdfium_client.js',
+  'assets/packages/pdfrx/assets/pdfium_worker.js',
 ];
 const shellPaths = new Set(shell.map((part) => new URL(part, scope).pathname));
 
@@ -27,6 +31,12 @@ self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(cacheName);
     await cache.addAll(shell.map((part) => new URL(part, scope).href));
+    const fontManifest = await cache.match(new URL('assets/FontManifest.json', scope).href);
+    const families = await fontManifest.json();
+    const fonts = new Set(families.flatMap(
+      (family) => family.fonts.map((font) => new URL('assets/' + font.asset, scope).href),
+    ));
+    await cache.addAll([...fonts]);
     await self.skipWaiting();
   })());
 });
