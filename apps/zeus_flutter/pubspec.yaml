@@ -19,6 +19,8 @@ dependencies:
   url_launcher: ^6.3.3
   file_selector: ^1.1.0
   pdfrx: 3.0.0
+  flutter_tts: ^4.2.5
+  speech_to_text: ^7.5.0
   flutter_secure_storage: ^11.2.0
   http: ^1.6.0
   uuid: ^4.6.0

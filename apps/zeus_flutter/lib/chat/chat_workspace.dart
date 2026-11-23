@@ -11,6 +11,7 @@ import '../design.dart';
 import '../providers/provider_protocol.dart';
 import '../providers/provider_settings.dart';
 import '../rich/rich_message.dart';
+import '../voice/device_voice.dart';
 import 'chat_repository.dart';
 import 'chat_runtime.dart';
 
@@ -21,9 +22,11 @@ class ChatWorkspace extends StatefulWidget {
     super.key,
     required this.runtime,
     required this.onProviders,
+    this.interactive = true,
   });
   final ChatRuntime runtime;
   final VoidCallback onProviders;
+  final bool interactive;
 
   @override
   State<ChatWorkspace> createState() => _ChatWorkspaceState();
@@ -35,6 +38,8 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
   final _scroll = ScrollController();
   final _composeFocus = FocusNode();
   final _historyRevision = ValueNotifier(0);
+  final _voice = DeviceVoice();
+  bool _listening = false;
   List<ChatThread> _threads = const [];
   List<ChatMessage> _messages = const [];
   ChatThread? _thread;
@@ -108,8 +113,15 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
   }
 
   @override
+  void didUpdateWidget(covariant ChatWorkspace oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.interactive && oldWidget.interactive) unawaited(_voice.stop());
+  }
+
+  @override
   void dispose() {
     widget.runtime.removeListener(_runtimeChanged);
+    unawaited(_voice.stop());
     _saveDraftTimer?.cancel();
     _searchTimer?.cancel();
     _draft.dispose();
@@ -158,6 +170,7 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
   Future<void> _open(ChatThread thread, {bool savePreference = true}) async {
     final selection = ++_selection;
     try {
+      if (_listening) await _voice.stopDictation();
       await _flushDraft();
       final messages = await _repo.messages(thread.id);
       if (!mounted || selection != _selection) return;
@@ -315,6 +328,68 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
         _saveDraft(prompt);
       }
       _showError();
+    }
+  }
+
+  Future<void> _dictate(ChatThread thread) async {
+    try {
+      if (_listening) {
+        await _voice.stopDictation();
+        if (mounted) setState(() => _listening = false);
+        return;
+      }
+      final language = Localizations.localeOf(context).languageCode;
+      final prefix = _draft.text.trimRight();
+      final success = await _voice.startDictation(
+        language: language,
+        recognized: (words) {
+          if (!mounted ||
+              !widget.interactive ||
+              _thread?.id != thread.id ||
+              words.isEmpty) {
+            return;
+          }
+          _draft.text = prefix.isEmpty ? words : '$prefix $words';
+          _draft.selection = TextSelection.collapsed(
+            offset: _draft.text.length,
+          );
+          _saveDraft(_draft.text);
+        },
+        onListening: (listening) {
+          if (mounted) {
+            setState(() => _listening = widget.interactive && listening);
+          }
+        },
+        onError: () {
+          if (mounted && widget.interactive) _voiceFeedback();
+        },
+      );
+      if (!success && mounted) _voiceFeedback();
+    } catch (_) {
+      if (mounted) _voiceFeedback();
+    }
+  }
+
+  void _voiceFeedback() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          localize(
+            context,
+            'Voice features require device permission and a voice for this language.',
+            'تتطلب ميزات الصوت إذن الجهاز وصوتًا متاحًا لهذه اللغة.',
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _readMessage(String text) async {
+    try {
+      final language = Localizations.localeOf(context).languageCode;
+      if (!await _voice.readOrStop(text, language) && mounted) _voiceFeedback();
+    } catch (_) {
+      if (mounted) _voiceFeedback();
     }
   }
 
@@ -760,6 +835,16 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
                       ),
                     ),
                   ),
+                  if (DeviceVoice.speechSupported)
+                    IconButton(
+                      tooltip: _listening
+                          ? localize(context, 'Stop dictation', 'إيقاف الإملاء')
+                          : localize(context, 'Dictate', 'الإملاء الصوتي'),
+                      onPressed: () => unawaited(_dictate(thread)),
+                      isSelected: _listening,
+                      icon: const Icon(Icons.mic_none_rounded),
+                      selectedIcon: const Icon(Icons.mic_rounded),
+                    ),
                   IconButton.filledTonal(
                     tooltip: active == null
                         ? localize(context, 'Send', 'إرسال')
@@ -831,6 +916,8 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
             switch (action) {
               case 'copy':
                 unawaited(Clipboard.setData(ClipboardData(text: message.text)));
+              case 'read':
+                unawaited(_readMessage(message.text));
               case 'branch':
                 unawaited(_fork(thread, message));
               case 'edit':
@@ -844,6 +931,17 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
               value: 'copy',
               child: Text(localize(context, 'Copy', 'نسخ')),
             ),
+            if (DeviceVoice.readingSupported && message.text.isNotEmpty)
+              PopupMenuItem(
+                value: 'read',
+                child: Text(
+                  localize(
+                    context,
+                    'Read or stop reading',
+                    'قراءة الرد أو إيقاف القراءة',
+                  ),
+                ),
+              ),
             PopupMenuItem(
               value: 'branch',
               child: Text(

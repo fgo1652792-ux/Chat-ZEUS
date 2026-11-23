@@ -83,6 +83,7 @@ class _ZeusShellState extends State<ZeusShell> {
                 if (widget.onboarded)
                   ChatWorkspace(
                     runtime: widget.runtime,
+                    interactive: _destination == 0,
                     onProviders: () => setState(() => _destination = 1),
                   )
                 else
