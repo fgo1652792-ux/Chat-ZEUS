@@ -16,7 +16,7 @@ class LocalStore {
     final db = await selected.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 3,
+        version: 4,
         onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
         onCreate: migrate,
         onUpgrade: (db, from, to) => migrate(db, to, from: from),
@@ -90,6 +90,24 @@ class LocalStore {
       batch.execute("ALTER TABLE conversations ADD COLUMN parent_message TEXT");
       batch.execute(
         "CREATE INDEX chat_order ON conversations (deleted, archived, pinned DESC, updated_at DESC)",
+      );
+      await batch.commit(noResult: true);
+    }
+    if (from < 4 && to >= 4) {
+      final batch = db.batch();
+      batch.execute('''
+        CREATE TABLE attachments (
+          id TEXT PRIMARY KEY NOT NULL,
+          conversation_id TEXT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+          name TEXT NOT NULL,
+          kind TEXT NOT NULL CHECK(kind IN ('image', 'pdf', 'text')),
+          size INTEGER NOT NULL CHECK(size > 0 AND size <= 8388608),
+          payload BLOB NOT NULL CHECK(length(payload) = size),
+          created_at INTEGER NOT NULL
+        )
+      ''');
+      batch.execute(
+        'CREATE INDEX attachments_by_conversation ON attachments(conversation_id, created_at DESC)',
       );
       await batch.commit(noResult: true);
     }

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../attachments/attachment_sheet.dart';
+import '../attachments/attachments.dart';
 import '../design.dart';
 import '../providers/provider_protocol.dart';
 import '../providers/provider_settings.dart';
@@ -313,6 +315,26 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
         _saveDraft(prompt);
       }
       _showError();
+    }
+  }
+
+  Future<void> _openAttachments(ChatThread thread) async {
+    final insert = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (context) => FractionallySizedBox(
+        heightFactor: .72,
+        child: AttachmentSheet(
+          threadId: thread.id,
+          library: AttachmentLibrary(_repo.store),
+        ),
+      ),
+    );
+    if (insert != null && mounted && _thread?.id == thread.id) {
+      _draft.text += insert;
+      _draft.selection = TextSelection.collapsed(offset: _draft.text.length);
+      _saveDraft(_draft.text);
     }
   }
 
@@ -715,6 +737,11 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               child: Row(
                 children: [
+                  IconButton(
+                    tooltip: localize(context, 'Attachments', 'المرفقات'),
+                    onPressed: () => unawaited(_openAttachments(thread)),
+                    icon: const Icon(Icons.attach_file_rounded),
+                  ),
                   Expanded(
                     child: TextField(
                       controller: _draft,
