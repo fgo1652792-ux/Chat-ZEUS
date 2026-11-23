@@ -5,6 +5,7 @@ import 'chat/chat_runtime.dart';
 import 'chat/chat_workspace.dart';
 import 'design.dart';
 import 'providers/provider_settings.dart';
+import 'research/research_screen.dart';
 import 'studio/image_studio.dart';
 
 class ZeusShell extends StatefulWidget {
@@ -327,6 +328,15 @@ class _Settings extends StatelessWidget {
               ZeusPane(
                 child: Column(
                   children: [
+                    _entry(
+                      context,
+                      Icons.travel_explore,
+                      'Research',
+                      'البحث',
+                      (_) => ResearchScreen(
+                        credentials: shell.runtime.providers.credentials,
+                      ),
+                    ),
                     _entry(
                       context,
                       Icons.image_outlined,
