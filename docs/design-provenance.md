@@ -10,5 +10,6 @@ Git blob SHA before writing. See the bundled FlClash GPL-3.0 and Miuix
 Apache-2.0 notices and the source package license for component attribution.
 
 The imported theme controller's unused Riverpod import was removed for the
-Flutter analyzer. The renderer, test suite, and shader retain their original
-sources.
+Flutter analyzer. The renderer passes its existing anti-aliasing default explicitly to
+`pushClipRSuperellipse` so the web engine can compile it. The shader and test
+suite retain their original sources.
