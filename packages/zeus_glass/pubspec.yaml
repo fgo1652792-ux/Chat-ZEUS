@@ -1,0 +1,29 @@
+name: ui
+description: Reusable MiniRok Flutter surfaces and the FlClash glass renderer.
+publish_to: none
+version: 0.7.0
+
+environment:
+  sdk: ^3.13.0
+  flutter: ">=3.47.2"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_riverpod: ^3.4.2
+  intl: ^0.20.3
+  lucide_icons_flutter: ^3.1.17
+  material_color_utilities: ^0.13.0
+  shared_preferences: ^2.5.5
+
+dev_dependencies:
+  go_router: ^18.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  shaders:
+    - shaders/liquid_glass.frag

@@ -1,0 +1,46 @@
+name: Zeus Chat | Flutter Quality
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, feature/zeus-chat-complete]
+    paths: ['apps/**', 'packages/**', '.github/workflows/**']
+  pull_request:
+    paths: ['apps/**', 'packages/**', '.github/workflows/**']
+permissions:
+  contents: read
+jobs:
+  flutter-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.2'
+          channel: stable
+          cache: true
+      - name: Check project files
+        run: |
+          test -f apps/zeus_flutter/pubspec.yaml
+          test -f packages/zeus_glass/pubspec.yaml
+          cmp packages/zeus_glass/shaders/liquid_glass.frag apps/zeus_flutter/shaders/liquid_glass.frag
+      - name: Get glass dependencies
+        working-directory: packages/zeus_glass
+        run: flutter pub get
+      - name: Get app dependencies
+        working-directory: apps/zeus_flutter
+        run: flutter pub get
+      - name: Analyze the original glass package
+        working-directory: packages/zeus_glass
+        run: flutter analyze
+      - name: Glass tests
+        working-directory: packages/zeus_glass
+        run: flutter test --reporter expanded
+      - name: Format and analyze app
+        working-directory: apps/zeus_flutter
+        run: |
+          dart format --output=none --set-exit-if-changed lib test
+          flutter analyze
+      - name: App tests
+        working-directory: apps/zeus_flutter
+        run: flutter test test --reporter expanded

@@ -1,0 +1,530 @@
+{
+  "product": "Zeus Chat",
+  "spec_version": "4.0",
+  "source_design": {
+    "repository": "fgo1652792-ux/Mini-APK-Security-Audit",
+    "branch": "ui/liquid-glass",
+    "inspected_sha": "3c86ac68460a71d6e781e4776554e87d4cf86eb8",
+    "must_integrate_original": true
+  },
+  "execution_policy": "autonomous_sequential_no_approval_between_phases",
+  "current_phase": "00",
+  "phases": [
+    {
+      "id": "00",
+      "title": "جرد المرجع وتجهيز المستودع",
+      "status": "in_progress",
+      "started_at": "2026-11-23T19:29:26.557581+00:00",
+      "finished_at": null,
+      "commit_sha": null,
+      "tests": [],
+      "artifacts": [],
+      "blockers": [],
+      "next_action": "Run original glass and app tests on Flutter 3.47.2 and verify the Flutter Quality workflow.",
+      "github_action_runs": [],
+      "ios_simulator": {
+        "status": "not_ready",
+        "device": null,
+        "runtime": null,
+        "install": null,
+        "launch": null,
+        "integration": null,
+        "screenshot": null
+      },
+      "unsigned_ipa": {
+        "status": "not_ready",
+        "artifact_url": null,
+        "sha256": null,
+        "ipa_contains_payload": null
+      },
+      "qa_reports": []
+    },
+    {
+      "id": "01",
+      "title": "تشغيل الزجاج وشاشة الترحيب",
+      "status": "not_started",
+      "started_at": null,
+      "finished_at": null,
+      "commit_sha": null,
+      "tests": [],
+      "artifacts": [],
+      "blockers": [],
+      "next_action": null,
+      "github_action_runs": [],
+      "ios_simulator": {
+        "status": "not_ready",
+        "device": null,
+        "runtime": null,
+        "install": null,
+        "launch": null,
+        "integration": null,
+        "screenshot": null
+      },
+      "unsigned_ipa": {
+        "status": "not_ready",
+        "artifact_url": null,
+        "sha256": null,
+        "ipa_contains_payload": null
+      },
+      "qa_reports": []
+    },
+    {
+      "id": "02",
+      "title": "الهيكل والتخزين والتنقل",
+      "status": "not_started",
+      "started_at": null,
+      "finished_at": null,
+      "commit_sha": null,
+      "tests": [],
+      "artifacts": [],
+      "blockers": [],
+      "next_action": null,
+      "github_action_runs": [],
+      "ios_simulator": {
+        "status": "not_ready",
+        "device": null,
+        "runtime": null,
+        "install": null,
+        "launch": null,
+        "integration": null,
+        "screenshot": null
+      },
+      "unsigned_ipa": {
+        "status": "not_ready",
+        "artifact_url": null,
+        "sha256": null,
+        "ipa_contains_payload": null
+      },
+      "qa_reports": []
+    },
+    {
+      "id": "03",
+      "title": "المزوّدون ومفاتيح API",
+      "status": "not_started",
+      "started_at": null,
+      "finished_at": null,
+      "commit_sha": null,
+      "tests": [],
+      "artifacts": [],
+      "blockers": [],
+      "next_action": null,
+      "github_action_runs": [],
+      "ios_simulator": {
+        "status": "not_ready",
+        "device": null,
+        "runtime": null,
+        "install": null,
+        "launch": null,
+        "integration": null,
+        "screenshot": null
+      },
+      "unsigned_ipa": {
+        "status": "not_ready",
+        "artifact_url": null,
+        "sha256": null,
+        "ipa_contains_payload": null
+      },
+      "qa_reports": []
+    },
+    {
+      "id": "04",
+      "title": "اختيار النماذج",
+      "status": "not_started",
+      "started_at": null,
+      "finished_at": null,
+      "commit_sha": null,
+      "tests": [],
+      "artifacts": [],
+      "blockers": [],
+      "next_action": null,
+      "github_action_runs": [],
+      "ios_simulator": {
+        "status": "not_ready",
+        "device": null,
+        "runtime": null,
+        "install": null,
+        "launch": null,
+        "integration": null,
+        "screenshot": null
+      },
+      "unsigned_ipa": {
+        "status": "not_ready",
+        "artifact_url": null,
+        "sha256": null,
+        "ipa_contains_payload": null
+      },
+      "qa_reports": []
+    },
+    {
+      "id": "05",
+      "title": "محادثة ببث لحظي حقيقي",
+      "status": "not_started",
+      "started_at": null,
+      "finished_at": null,
+      "commit_sha": null,
+      "tests": [],
+      "artifacts": [],
+      "blockers": [],
+      "next_action": null,
+      "github_action_runs": [],
+      "ios_simulator": {
+        "status": "not_ready",
+        "device": null,
+        "runtime": null,
+        "install": null,
+        "launch": null,
+        "integration": null,
+        "screenshot": null
+      },
+      "unsigned_ipa": {
+        "status": "not_ready",
+        "artifact_url": null,
+        "sha256": null,
+        "ipa_contains_payload": null
+      },
+      "qa_reports": []
+    },
+    {
+      "id": "06",
+      "title": "سجل المحادثات والبحث والفروع",
+      "status": "not_started",
+      "started_at": null,
+      "finished_at": null,
+      "commit_sha": null,
+      "tests": [],
+      "artifacts": [],
+      "blockers": [],
+      "next_action": null,
+      "github_action_runs": [],
+      "ios_simulator": {
+        "status": "not_ready",
+        "device": null,
+        "runtime": null,
+        "install": null,
+        "launch": null,
+        "integration": null,
+        "screenshot": null
+      },
+      "unsigned_ipa": {
+        "status": "not_ready",
+        "artifact_url": null,
+        "sha256": null,
+        "ipa_contains_payload": null
+      },
+      "qa_reports": []
+    },
+    {
+      "id": "07",
+      "title": "رندر Markdown والعناصر الغنية",
+      "status": "not_started",
+      "started_at": null,
+      "finished_at": null,
+      "commit_sha": null,
+      "tests": [],
+      "artifacts": [],
+      "blockers": [],
+      "next_action": null,
+      "github_action_runs": [],
+      "ios_simulator": {
+        "status": "not_ready",
+        "device": null,
+        "runtime": null,
+        "install": null,
+        "launch": null,
+        "integration": null,
+        "screenshot": null
+      },
+      "unsigned_ipa": {
+        "status": "not_ready",
+        "artifact_url": null,
+        "sha256": null,
+        "ipa_contains_payload": null
+      },
+      "qa_reports": []
+    },
+    {
+      "id": "08",
+      "title": "الصور والملفات والمرفقات",
+      "status": "not_started",
+      "started_at": null,
+      "finished_at": null,
+      "commit_sha": null,
+      "tests": [],
+      "artifacts": [],
+      "blockers": [],
+      "next_action": null,
+      "github_action_runs": [],
+      "ios_simulator": {
+        "status": "not_ready",
+        "device": null,
+        "runtime": null,
+        "install": null,
+        "launch": null,
+        "integration": null,
+        "screenshot": null
+      },
+      "unsigned_ipa": {
+        "status": "not_ready",
+        "artifact_url": null,
+        "sha256": null,
+        "ipa_contains_payload": null
+      },
+      "qa_reports": []
+    },
+    {
+      "id": "09",
+      "title": "الصوت والقراءة",
+      "status": "not_started",
+      "started_at": null,
+      "finished_at": null,
+      "commit_sha": null,
+      "tests": [],
+      "artifacts": [],
+      "blockers": [],
+      "next_action": null,
+      "github_action_runs": [],
+      "ios_simulator": {
+        "status": "not_ready",
+        "device": null,
+        "runtime": null,
+        "install": null,
+        "launch": null,
+        "integration": null,
+        "screenshot": null
+      },
+      "unsigned_ipa": {
+        "status": "not_ready",
+        "artifact_url": null,
+        "sha256": null,
+        "ipa_contains_payload": null
+      },
+      "qa_reports": []
+    },
+    {
+      "id": "10",
+      "title": "توليد الصور والفيديو والرؤية",
+      "status": "not_started",
+      "started_at": null,
+      "finished_at": null,
+      "commit_sha": null,
+      "tests": [],
+      "artifacts": [],
+      "blockers": [],
+      "next_action": null,
+      "github_action_runs": [],
+      "ios_simulator": {
+        "status": "not_ready",
+        "device": null,
+        "runtime": null,
+        "install": null,
+        "launch": null,
+        "integration": null,
+        "screenshot": null
+      },
+      "unsigned_ipa": {
+        "status": "not_ready",
+        "artifact_url": null,
+        "sha256": null,
+        "ipa_contains_payload": null
+      },
+      "qa_reports": []
+    },
+    {
+      "id": "11",
+      "title": "البحث والبحث العميق",
+      "status": "not_started",
+      "started_at": null,
+      "finished_at": null,
+      "commit_sha": null,
+      "tests": [],
+      "artifacts": [],
+      "blockers": [],
+      "next_action": null,
+      "github_action_runs": [],
+      "ios_simulator": {
+        "status": "not_ready",
+        "device": null,
+        "runtime": null,
+        "install": null,
+        "launch": null,
+        "integration": null,
+        "screenshot": null
+      },
+      "unsigned_ipa": {
+        "status": "not_ready",
+        "artifact_url": null,
+        "sha256": null,
+        "ipa_contains_payload": null
+      },
+      "qa_reports": []
+    },
+    {
+      "id": "12",
+      "title": "المشاريع والذاكرة والمساعدون",
+      "status": "not_started",
+      "started_at": null,
+      "finished_at": null,
+      "commit_sha": null,
+      "tests": [],
+      "artifacts": [],
+      "blockers": [],
+      "next_action": null,
+      "github_action_runs": [],
+      "ios_simulator": {
+        "status": "not_ready",
+        "device": null,
+        "runtime": null,
+        "install": null,
+        "launch": null,
+        "integration": null,
+        "screenshot": null
+      },
+      "unsigned_ipa": {
+        "status": "not_ready",
+        "artifact_url": null,
+        "sha256": null,
+        "ipa_contains_payload": null
+      },
+      "qa_reports": []
+    },
+    {
+      "id": "13",
+      "title": "الأدوات وMCP والوكلاء",
+      "status": "not_started",
+      "started_at": null,
+      "finished_at": null,
+      "commit_sha": null,
+      "tests": [],
+      "artifacts": [],
+      "blockers": [],
+      "next_action": null,
+      "github_action_runs": [],
+      "ios_simulator": {
+        "status": "not_ready",
+        "device": null,
+        "runtime": null,
+        "install": null,
+        "launch": null,
+        "integration": null,
+        "screenshot": null
+      },
+      "unsigned_ipa": {
+        "status": "not_ready",
+        "artifact_url": null,
+        "sha256": null,
+        "ipa_contains_payload": null
+      },
+      "qa_reports": []
+    },
+    {
+      "id": "14",
+      "title": "خادم المزامنة والمهام الاختياري",
+      "status": "not_started",
+      "started_at": null,
+      "finished_at": null,
+      "commit_sha": null,
+      "tests": [],
+      "artifacts": [],
+      "blockers": [],
+      "next_action": null,
+      "github_action_runs": [],
+      "ios_simulator": {
+        "status": "not_ready",
+        "device": null,
+        "runtime": null,
+        "install": null,
+        "launch": null,
+        "integration": null,
+        "screenshot": null
+      },
+      "unsigned_ipa": {
+        "status": "not_ready",
+        "artifact_url": null,
+        "sha256": null,
+        "ipa_contains_payload": null
+      },
+      "qa_reports": []
+    },
+    {
+      "id": "15",
+      "title": "تحسين الأداء والأمان والتعدد اللغوي",
+      "status": "not_started",
+      "started_at": null,
+      "finished_at": null,
+      "commit_sha": null,
+      "tests": [],
+      "artifacts": [],
+      "blockers": [],
+      "next_action": null,
+      "github_action_runs": [],
+      "ios_simulator": {
+        "status": "not_ready",
+        "device": null,
+        "runtime": null,
+        "install": null,
+        "launch": null,
+        "integration": null,
+        "screenshot": null
+      },
+      "unsigned_ipa": {
+        "status": "not_ready",
+        "artifact_url": null,
+        "sha256": null,
+        "ipa_contains_payload": null
+      },
+      "qa_reports": []
+    },
+    {
+      "id": "16",
+      "title": "بناء النسخ والتسليم",
+      "status": "not_started",
+      "started_at": null,
+      "finished_at": null,
+      "commit_sha": null,
+      "tests": [],
+      "artifacts": [],
+      "blockers": [],
+      "next_action": null,
+      "github_action_runs": [],
+      "ios_simulator": {
+        "status": "not_ready",
+        "device": null,
+        "runtime": null,
+        "install": null,
+        "launch": null,
+        "integration": null,
+        "screenshot": null
+      },
+      "unsigned_ipa": {
+        "status": "not_ready",
+        "artifact_url": null,
+        "sha256": null,
+        "ipa_contains_payload": null
+      },
+      "qa_reports": []
+    }
+  ],
+  "note": "Template only: this file is NOT evidence that any phase has begun.",
+  "target_repository": {
+    "url": "https://github.com/fgo1652792-ux/Chat-ZEUS.git",
+    "owner": "fgo1652792-ux",
+    "name": "Chat-ZEUS",
+    "default_branch": "main",
+    "implementation_branch": "feature/zeus-chat-complete",
+    "verified_at": "2026-11-23",
+    "verified_root_files": [
+      "README.md"
+    ]
+  },
+  "github_actions": {
+    "repository": "fgo1652792-ux/Chat-ZEUS",
+    "required_workflows": [
+      "zeus-flutter-quality.yml",
+      "zeus-ios-simulator.yml",
+      "zeus-ios-unsigned-ipa.yml"
+    ],
+    "latest_quality_run": null,
+    "latest_simulator_run": null,
+    "latest_unsigned_ipa_run": null
+  }
+}

@@ -1,0 +1,10 @@
+.dart_tool/
+.flutter-plugins-dependencies
+.pub/
+build/
+coverage/
+dist/
+.env
+.env.*
+!.env.example
+.DS_Store
