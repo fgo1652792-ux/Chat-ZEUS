@@ -5,6 +5,7 @@ import 'chat/chat_runtime.dart';
 import 'chat/chat_workspace.dart';
 import 'design.dart';
 import 'providers/provider_settings.dart';
+import 'studio/image_studio.dart';
 
 class ZeusShell extends StatefulWidget {
   const ZeusShell({
@@ -240,6 +241,20 @@ class _Settings extends StatelessWidget {
   const _Settings({required this.shell});
   final ZeusShell shell;
 
+  Widget _entry(
+    BuildContext context,
+    IconData icon,
+    String en,
+    String ar,
+    WidgetBuilder builder,
+  ) => ListTile(
+    leading: Icon(icon),
+    title: Text(localize(context, en, ar)),
+    trailing: const Icon(Icons.chevron_right),
+    onTap: () =>
+        Navigator.of(context).push<void>(MaterialPageRoute(builder: builder)),
+  );
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -304,6 +319,20 @@ class _Settings extends StatelessWidget {
                           ),
                         ],
                       ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              ZeusPane(
+                child: Column(
+                  children: [
+                    _entry(
+                      context,
+                      Icons.image_outlined,
+                      'Image Studio',
+                      'استوديو الصور',
+                      (_) => ImageStudio(repository: shell.runtime.providers),
                     ),
                   ],
                 ),

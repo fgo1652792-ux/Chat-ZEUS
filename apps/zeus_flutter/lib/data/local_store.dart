@@ -16,7 +16,7 @@ class LocalStore {
     final db = await selected.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 4,
+        version: 5,
         onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
         onCreate: migrate,
         onUpgrade: (db, from, to) => migrate(db, to, from: from),
@@ -110,6 +110,17 @@ class LocalStore {
         'CREATE INDEX attachments_by_conversation ON attachments(conversation_id, created_at DESC)',
       );
       await batch.commit(noResult: true);
+    }
+    if (from < 5 && to >= 5) {
+      await db.execute('''
+        CREATE TABLE generated_images (
+          id TEXT PRIMARY KEY NOT NULL,
+          model TEXT NOT NULL,
+          prompt TEXT NOT NULL,
+          payload BLOB NOT NULL CHECK(length(payload) <= 8388608),
+          created_at INTEGER NOT NULL
+        )
+      ''');
     }
   }
 
