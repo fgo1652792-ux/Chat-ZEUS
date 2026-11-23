@@ -35,7 +35,10 @@ jobs:
         run: flutter analyze
       - name: Glass tests
         working-directory: packages/zeus_glass
-        run: flutter test --reporter expanded
+        shell: bash
+        run: |
+          set -o pipefail
+          flutter test --coverage --reporter expanded 2>&1 | tee glass-tests.log
       - name: Format and analyze app
         working-directory: apps/zeus_flutter
         run: |
@@ -43,4 +46,19 @@ jobs:
           flutter analyze
       - name: App tests
         working-directory: apps/zeus_flutter
-        run: flutter test test --reporter expanded
+        shell: bash
+        run: |
+          set -o pipefail
+          flutter test test --coverage --reporter expanded 2>&1 | tee app-tests.log
+      - name: Upload test logs and coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZeusChat-flutter-quality
+          path: |
+            apps/zeus_flutter/app-tests.log
+            apps/zeus_flutter/coverage/lcov.info
+            packages/zeus_glass/glass-tests.log
+            packages/zeus_glass/coverage/lcov.info
+          if-no-files-found: warn
+          retention-days: 14

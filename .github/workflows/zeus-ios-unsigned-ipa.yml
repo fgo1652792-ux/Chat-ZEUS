@@ -50,6 +50,7 @@ jobs:
           (cd "$OUT" && shasum -a 256 "$(basename "$IPA")" > SHA256SUMS.txt)
           printf '%s\n' 'Unsigned device build. Normal iOS installation requires a suitable later signing step.' > "$OUT/README-UNSIGNED.txt"
           ls -lh "$OUT"
+          cat "$OUT/SHA256SUMS.txt" >> "$GITHUB_STEP_SUMMARY"
       - name: Upload unsigned IPA and checksum
         uses: actions/upload-artifact@v4
         with:
