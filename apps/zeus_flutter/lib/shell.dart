@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ui/minirok_glass.dart';
 
-String localize(BuildContext context, String en, String ar) {
-  return Localizations.localeOf(context).languageCode == 'ar' ? ar : en;
-}
+import 'design.dart';
 
 class ZeusShell extends StatefulWidget {
   const ZeusShell({
@@ -11,6 +9,8 @@ class ZeusShell extends StatefulWidget {
     required this.glassEnabled,
     required this.themeMode,
     required this.locale,
+    required this.onboarded,
+    required this.onOnboarded,
     required this.onGlassChanged,
     required this.onThemeChanged,
     required this.onLocaleChanged,
@@ -19,6 +19,8 @@ class ZeusShell extends StatefulWidget {
   final bool glassEnabled;
   final ThemeMode themeMode;
   final Locale locale;
+  final bool onboarded;
+  final VoidCallback onOnboarded;
   final ValueChanged<bool> onGlassChanged;
   final ValueChanged<ThemeMode> onThemeChanged;
   final ValueChanged<Locale> onLocaleChanged;
@@ -44,66 +46,91 @@ class _ZeusShellState extends State<ZeusShell> {
         label: localize(context, 'Settings', 'الإعدادات'),
       ),
     ];
-    return Scaffold(
-      backgroundColor: dark ? const Color(0xff090b14) : const Color(0xffeff2fa),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final wide = constraints.maxWidth >= 760;
-          final dock = FlClashNavigationDock(
-            axis: wide ? Axis.vertical : Axis.horizontal,
-            destinations: destinations,
-            selectedIndex: _destination,
-            onDestinationSelected: (index) =>
-                setState(() => _destination = index),
-          );
-          final page = _destination == 0
-              ? _Welcome(onSettings: () => setState(() => _destination = 1))
-              : _Settings(shell: widget);
-          return Stack(
-            fit: StackFit.expand,
-            children: [
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    center: const Alignment(0.15, -0.65),
-                    radius: 0.95,
-                    colors: dark
-                        ? const [Color(0xff202747), Color(0xff090b14)]
-                        : const [Color(0xffdce4fd), Color(0xfff6f7fd)],
+    return PopScope(
+      canPop: _destination == 0,
+      onPopInvokedWithResult: (popped, _) {
+        if (!popped && _destination != 0) {
+          setState(() => _destination = 0);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: dark
+            ? const Color(0xff090b14)
+            : const Color(0xffeff2fa),
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            final wide = constraints.maxWidth >= 760;
+            final dock = FlClashNavigationDock(
+              axis: wide ? Axis.vertical : Axis.horizontal,
+              destinations: destinations,
+              selectedIndex: _destination,
+              onDestinationSelected: (index) =>
+                  setState(() => _destination = index),
+            );
+            final page = _destination == 0
+                ? _Welcome(
+                    onboarded: widget.onboarded,
+                    onStart: widget.onOnboarded,
+                    onSettings: () => setState(() => _destination = 1),
+                  )
+                : _Settings(shell: widget);
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: const Alignment(0.15, -0.65),
+                      radius: 0.95,
+                      colors: dark
+                          ? const [Color(0xff202747), Color(0xff090b14)]
+                          : const [Color(0xffdce4fd), Color(0xfff6f7fd)],
+                    ),
                   ),
                 ),
-              ),
-              SafeArea(
-                bottom: wide,
-                child: Padding(
-                  padding: wide
-                      ? const EdgeInsetsDirectional.only(start: 108)
-                      : EdgeInsets.only(
-                          bottom: FlClashNavigationDock.insetOf(context),
-                        ),
-                  child: page,
+                SafeArea(
+                  bottom: wide,
+                  child: Padding(
+                    padding: wide
+                        ? const EdgeInsetsDirectional.only(start: 108)
+                        : EdgeInsets.only(
+                            bottom: FlClashNavigationDock.insetOf(context),
+                          ),
+                    child: page,
+                  ),
                 ),
-              ),
-              if (wide)
-                PositionedDirectional(
-                  top: 28,
-                  bottom: 28,
-                  start: 16,
-                  width: 84,
-                  child: dock,
-                )
-              else
-                PositionedDirectional(start: 0, end: 0, bottom: 0, child: dock),
-            ],
-          );
-        },
+                if (wide)
+                  PositionedDirectional(
+                    top: 28,
+                    bottom: 28,
+                    start: 16,
+                    width: 84,
+                    child: dock,
+                  )
+                else
+                  PositionedDirectional(
+                    start: 0,
+                    end: 0,
+                    bottom: 0,
+                    child: dock,
+                  ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
 }
 
 class _Welcome extends StatelessWidget {
-  const _Welcome({required this.onSettings});
+  const _Welcome({
+    required this.onSettings,
+    required this.onboarded,
+    required this.onStart,
+  });
+  final bool onboarded;
+  final VoidCallback onStart;
   final VoidCallback onSettings;
 
   @override
@@ -142,8 +169,12 @@ class _Welcome extends StatelessWidget {
               Text(
                 localize(
                   context,
-                  'One place for the AI models you choose.',
-                  'مساحة واحدة لنماذج الذكاء الاصطناعي التي تختارها.',
+                  onboarded
+                      ? 'Your data stays in this workspace.'
+                      : 'One place for the AI models you choose.',
+                  onboarded
+                      ? 'تبقى بياناتك في مساحة العمل هذه.'
+                      : 'مساحة واحدة لنماذج الذكاء الاصطناعي التي تختارها.',
                 ),
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge?.copyWith(
@@ -151,6 +182,17 @@ class _Welcome extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 30),
+              if (!onboarded) ...[
+                FilledButton.icon(
+                  key: const Key('start-local'),
+                  onPressed: onStart,
+                  icon: const Icon(Icons.computer_rounded),
+                  label: Text(
+                    localize(context, 'Start locally', 'ابدأ محليًا'),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
               ZeusPane(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
@@ -248,30 +290,6 @@ class _Settings extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class ZeusPane extends StatelessWidget {
-  const ZeusPane({super.key, required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final radius = BorderRadius.circular(24);
-    if (LiquidGlassScope.of(context)) {
-      return LiquidGlass(
-        borderRadius: radius,
-        style: LiquidGlassStyle.regular(colors),
-        child: Material(type: MaterialType.transparency, child: child),
-      );
-    }
-    return Material(
-      borderRadius: radius,
-      color: colors.surfaceContainerHigh,
-      clipBehavior: Clip.antiAlias,
-      child: child,
     );
   }
 }
