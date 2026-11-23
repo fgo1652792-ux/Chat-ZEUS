@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import '../design.dart';
 import '../providers/provider_protocol.dart';
 import '../providers/provider_settings.dart';
+import '../rich/rich_message.dart';
 import 'chat_repository.dart';
 import 'chat_runtime.dart';
 
@@ -794,6 +795,7 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
         context,
         message.text,
         user: user,
+        format: !user && message.state == MessageState.completed,
         footer: footer.isEmpty ? null : footer,
         actions: PopupMenuButton<String>(
           icon: const Icon(Icons.more_horiz, size: 19),
@@ -847,6 +849,7 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
     required bool user,
     String? footer,
     Widget? actions,
+    bool format = false,
   }) {
     final colors = Theme.of(context).colorScheme;
     return Container(
@@ -861,7 +864,8 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (text.isNotEmpty) SelectableText(text),
+          if (text.isNotEmpty)
+            format ? RichMessage(text) : SelectableText(text),
           if (footer != null)
             Padding(
               padding: const EdgeInsets.only(top: 6),
