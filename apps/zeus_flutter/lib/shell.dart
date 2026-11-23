@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:ui/minirok_glass.dart';
 
 import 'design.dart';
+import 'providers/provider_repository.dart';
+import 'providers/provider_settings.dart';
 
 class ZeusShell extends StatefulWidget {
   const ZeusShell({
@@ -10,6 +12,7 @@ class ZeusShell extends StatefulWidget {
     required this.themeMode,
     required this.locale,
     required this.onboarded,
+    required this.providers,
     required this.onOnboarded,
     required this.onGlassChanged,
     required this.onThemeChanged,
@@ -20,6 +23,7 @@ class ZeusShell extends StatefulWidget {
   final ThemeMode themeMode;
   final Locale locale;
   final bool onboarded;
+  final ProviderRepository providers;
   final VoidCallback onOnboarded;
   final ValueChanged<bool> onGlassChanged;
   final ValueChanged<ThemeMode> onThemeChanged;
@@ -40,6 +44,10 @@ class _ZeusShellState extends State<ZeusShell> {
       FlClashNavigationDestination(
         icon: Icons.chat_bubble_outline_rounded,
         label: localize(context, 'Home', 'الرئيسية'),
+      ),
+      FlClashNavigationDestination(
+        icon: Icons.hub_outlined,
+        label: localize(context, 'Providers', 'المزوّدون'),
       ),
       FlClashNavigationDestination(
         icon: Icons.tune_rounded,
@@ -71,8 +79,10 @@ class _ZeusShellState extends State<ZeusShell> {
                 ? _Welcome(
                     onboarded: widget.onboarded,
                     onStart: widget.onOnboarded,
-                    onSettings: () => setState(() => _destination = 1),
+                    onSettings: () => setState(() => _destination = 2),
                   )
+                : _destination == 1
+                ? ProviderSettings(repository: widget.providers)
                 : _Settings(shell: widget);
             return Stack(
               fit: StackFit.expand,

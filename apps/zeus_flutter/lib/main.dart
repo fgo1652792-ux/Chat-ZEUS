@@ -5,6 +5,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ui/minirok_glass.dart';
 
 import 'data/local_store.dart';
+import 'providers/credentials.dart';
+import 'providers/provider_repository.dart';
 import 'shell.dart';
 
 void main() {
@@ -30,6 +32,7 @@ class _ZeusAppState extends State<ZeusApp> {
   bool _onboarded = false;
   bool _storageError = false;
   LocalStore? _store;
+  final _credentials = createCredentials();
 
   @override
   void initState() {
@@ -129,6 +132,7 @@ class _ZeusAppState extends State<ZeusApp> {
               themeMode: _themeMode,
               locale: _locale,
               onboarded: _onboarded,
+              providers: ProviderRepository(store, _credentials),
               onOnboarded: () =>
                   _save('onboarded', 'true', () => _onboarded = true),
               onGlassChanged: (value) =>

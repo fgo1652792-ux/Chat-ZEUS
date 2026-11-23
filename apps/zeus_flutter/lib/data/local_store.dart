@@ -16,7 +16,7 @@ class LocalStore {
     final db = await selected.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 1,
+        version: 2,
         onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
         onCreate: migrate,
         onUpgrade: (db, from, to) => migrate(db, to, from: from),
@@ -60,6 +60,17 @@ class LocalStore {
         )
       ''');
       await batch.commit(noResult: true);
+    }
+    if (from < 2 && to >= 2) {
+      await db.execute('''
+        CREATE TABLE providers (
+          id TEXT PRIMARY KEY NOT NULL,
+          kind TEXT NOT NULL,
+          endpoint TEXT NOT NULL,
+          label TEXT NOT NULL,
+          manual_model TEXT NOT NULL DEFAULT ''
+        )
+      ''');
     }
   }
 
