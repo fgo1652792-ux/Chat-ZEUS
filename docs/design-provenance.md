@@ -8,3 +8,7 @@ The import includes the original Dart source, shader, widget tests, dependency
 manifest, and third-party notices. Each source file was checked against its
 Git blob SHA before writing. See the bundled FlClash GPL-3.0 and Miuix
 Apache-2.0 notices and the source package license for component attribution.
+
+The imported theme controller's unused Riverpod import was removed for the
+Flutter analyzer. The renderer, test suite, and shader retain their original
+sources.
