@@ -532,8 +532,16 @@ class _ProviderEditorState extends State<_ProviderEditor> {
 }
 
 class ModelPicker extends StatefulWidget {
-  const ModelPicker({super.key, required this.models});
+  const ModelPicker({
+    super.key,
+    required this.models,
+    this.repository,
+    this.providerId,
+  });
+
   final List<ModelDescriptor> models;
+  final ProviderRepository? repository;
+  final String? providerId;
 
   @override
   State<ModelPicker> createState() => _ModelPickerState();
@@ -541,16 +549,81 @@ class ModelPicker extends StatefulWidget {
 
 class _ModelPickerState extends State<ModelPicker> {
   String _search = '';
+  Set<String> _favorites = {};
+  String? _input;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_loadFavorites());
+  }
+
+  Future<void> _loadFavorites() async {
+    final repository = widget.repository;
+    final provider = widget.providerId;
+    if (repository != null && provider != null) {
+      try {
+        final values = await repository.favoriteModels(provider);
+        if (mounted) setState(() => _favorites = values);
+      } catch (_) {
+        // Discovery and selection still work if favorites cannot be loaded.
+      }
+    }
+  }
+
+  Future<void> _toggleFavorite(ModelDescriptor model) async {
+    final repository = widget.repository;
+    final provider = widget.providerId;
+    if (repository == null || provider == null) return;
+    final starred = !_favorites.contains(model.id);
+    try {
+      await repository.setFavorite(provider, model.id, starred);
+      if (mounted) {
+        setState(() {
+          if (starred) {
+            _favorites.add(model.id);
+          } else {
+            _favorites.remove(model.id);
+          }
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              localize(
+                context,
+                'Could not update favorites.',
+                'تعذر تحديث المفضلة.',
+              ),
+            ),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final models = widget.models
-        .where(
-          (m) =>
-              m.id.toLowerCase().contains(_search) ||
-              (m.label ?? '').toLowerCase().contains(_search),
-        )
-        .toList();
+    final inputs = widget.models
+        .expand((model) => model.supportedInputs)
+        .toSet();
+    final models = widget.models.where((model) {
+      final matchesText =
+          model.id.toLowerCase().contains(_search) ||
+          (model.label ?? '').toLowerCase().contains(_search);
+      return matchesText &&
+          (_input == null || model.supportedInputs.contains(_input));
+    }).toList();
+    models.sort((a, b) {
+      final pinned = (_favorites.contains(b.id) ? 1 : 0).compareTo(
+        _favorites.contains(a.id) ? 1 : 0,
+      );
+      return pinned == 0
+          ? (a.label ?? a.id).compareTo(b.label ?? b.id)
+          : pinned;
+    });
     return AlertDialog(
       title: Text(localize(context, 'Choose a model', 'اختر نموذجًا')),
       content: SizedBox(
@@ -566,23 +639,62 @@ class _ModelPickerState extends State<ModelPicker> {
                 labelText: localize(context, 'Search models', 'البحث عن نموذج'),
               ),
             ),
+            if (inputs.isNotEmpty)
+              DropdownButton<String>(
+                value: _input,
+                isExpanded: true,
+                onChanged: (value) => setState(() => _input = value),
+                items: [
+                  DropdownMenuItem(
+                    child: Text(
+                      localize(context, 'All inputs', 'جميع أنواع الإدخال'),
+                    ),
+                  ),
+                  for (final value in inputs)
+                    DropdownMenuItem(value: value, child: Text(value)),
+                ],
+              ),
             const SizedBox(height: 8),
             Expanded(
               child: ListView.builder(
                 itemCount: models.length,
                 itemBuilder: (context, index) {
                   final model = models[index];
+                  final favorite = _favorites.contains(model.id);
                   return ListTile(
                     title: Text(
                       model.label ?? model.id,
                       textDirection: TextDirection.ltr,
                     ),
-                    subtitle: model.label != null && model.label != model.id
-                        ? Text(model.id, textDirection: TextDirection.ltr)
-                        : null,
-                    trailing: model.contextWindow == null
+                    subtitle: Text(
+                      [
+                        if (model.label != null && model.label != model.id)
+                          model.id,
+                        if (model.contextWindow != null)
+                          '${model.contextWindow} input tokens',
+                        ...model.supportedInputs,
+                      ].join(' · '),
+                      textDirection: TextDirection.ltr,
+                    ),
+                    trailing: widget.repository == null
                         ? null
-                        : Text('${model.contextWindow}'),
+                        : IconButton(
+                            tooltip: favorite
+                                ? localize(
+                                    context,
+                                    'Remove favorite',
+                                    'إزالة من المفضلة',
+                                  )
+                                : localize(
+                                    context,
+                                    'Favorite',
+                                    'إضافة إلى المفضلة',
+                                  ),
+                            icon: Icon(
+                              favorite ? Icons.star : Icons.star_border,
+                            ),
+                            onPressed: () => unawaited(_toggleFavorite(model)),
+                          ),
                     onTap: () => Navigator.pop(context, model),
                   );
                 },

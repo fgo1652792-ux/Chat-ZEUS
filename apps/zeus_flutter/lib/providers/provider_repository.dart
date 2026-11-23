@@ -48,6 +48,22 @@ class ProviderRepository {
     }
   }
 
+  Future<Set<String>> favoriteModels(String providerId) async {
+    final prefix = 'model.favorite.$providerId.';
+    final rows = await store.db.query(
+      'preferences',
+      columns: ['key'],
+      where: 'key LIKE ? AND value = ?',
+      whereArgs: ['$prefix%', 'true'],
+    );
+    return {
+      for (final row in rows) (row['key']! as String).substring(prefix.length),
+    };
+  }
+
+  Future<void> setFavorite(String providerId, String modelId, bool favorite) =>
+      store.setPreference('model.favorite.$providerId.$modelId', '$favorite');
+
   Future<void> _setKey(String id, String key) =>
       key.isEmpty ? credentials.delete(id) : credentials.write(id, key);
 }
