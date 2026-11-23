@@ -8,20 +8,30 @@
     "must_integrate_original": true
   },
   "execution_policy": "autonomous_sequential_no_approval_between_phases",
-  "current_phase": "00",
+  "current_phase": "01",
   "phases": [
     {
       "id": "00",
       "title": "جرد المرجع وتجهيز المستودع",
-      "status": "in_progress",
+      "status": "passed",
       "started_at": "2026-11-23T19:29:26.557581+00:00",
-      "finished_at": null,
-      "commit_sha": null,
-      "tests": [],
+      "finished_at": "2026-11-23T19:34:45.818550+00:00",
+      "commit_sha": "707ff8df1ae83ca9e68b24f5dddcb956ba077927",
+      "tests": [
+        "Flutter analyze: app and ui pass",
+        "202 original glass tests and one shell test passed"
+      ],
       "artifacts": [],
       "blockers": [],
-      "next_action": "Run original glass and app tests on Flutter 3.47.2 and verify the Flutter Quality workflow.",
-      "github_action_runs": [],
+      "next_action": "Start the iOS Simulator and device package workflows after adding the app shell.",
+      "github_action_runs": [
+        {
+          "name": "Flutter Quality",
+          "run_id": 45249927985,
+          "url": "https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45249927985",
+          "conclusion": "success"
+        }
+      ],
       "ios_simulator": {
         "status": "not_ready",
         "device": null,
@@ -37,19 +47,21 @@
         "sha256": null,
         "ipa_contains_payload": null
       },
-      "qa_reports": []
+      "qa_reports": [
+        "docs/qa/phase-00.md"
+      ]
     },
     {
       "id": "01",
       "title": "تشغيل الزجاج وشاشة الترحيب",
-      "status": "not_started",
-      "started_at": null,
+      "status": "in_progress",
+      "started_at": "2026-11-23T19:34:45.818550+00:00",
       "finished_at": null,
       "commit_sha": null,
       "tests": [],
       "artifacts": [],
       "blockers": [],
-      "next_action": null,
+      "next_action": "Validate launch and glass settings on both iOS simulators.",
       "github_action_runs": [],
       "ios_simulator": {
         "status": "not_ready",

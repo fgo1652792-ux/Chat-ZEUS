@@ -2,8 +2,9 @@
 
 | Phase | State | Evidence |
 | --- | --- | --- |
-| 00 | in_progress | Original Liquid Glass sources verified against their Git blob hashes. |
-| 01–16 | not_started | See the phase records in `.zeus/progress.json`. |
+| 00 | passed | [Flutter Quality 45249927985](https://github.com/fgo1652792-ux/Chat-ZEUS/actions/runs/45249927985), 202 original glass tests and one app shell test. |
+| 01 | in_progress | Flutter platform shells and iOS smoke run in preparation. |
+| 02–16 | not_started | See `.zeus/progress.json`. |
 
-`NEXT_ACTION` is to run the app and glass tests on the pinned Flutter toolchain
-and verify the Flutter Quality workflow.
+`NEXT_ACTION` is to verify iOS launch and the glass setting on the available
+iPhone and iPad simulators and verify the unsigned device artifact.
