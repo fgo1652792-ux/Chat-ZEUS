@@ -43,7 +43,7 @@ class _ToolsScreenState extends State<ToolsScreen> {
     try {
       await work();
     } on FormatException {
-      if (mounted)
+      if (mounted) {
         setState(
           () => _error = localize(
             context,
@@ -51,6 +51,7 @@ class _ToolsScreenState extends State<ToolsScreen> {
             'تحقق من العنوان أو معاملات الأداة.',
           ),
         );
+      }
     } on McpException catch (failure) {
       if (mounted) {
         setState(
@@ -62,7 +63,7 @@ class _ToolsScreenState extends State<ToolsScreen> {
         );
       }
     } catch (_) {
-      if (mounted)
+      if (mounted) {
         setState(
           () => _error = localize(
             context,
@@ -70,6 +71,7 @@ class _ToolsScreenState extends State<ToolsScreen> {
             'تعذر الاتصال بخادم MCP.',
           ),
         );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -78,12 +80,13 @@ class _ToolsScreenState extends State<ToolsScreen> {
   Future<void> _connect() async {
     final endpoint = McpClient.parseEndpoint(_endpoint.text);
     final client = McpClient(endpoint, bearer: _token.text.trim());
-    if (mounted)
+    if (mounted) {
       setState(() {
         _selection = null;
         _tools = [];
         _result = null;
       });
+    }
     _connection?.close();
     _connection = client;
     final tools = await client.initialize();

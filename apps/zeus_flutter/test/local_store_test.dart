@@ -29,4 +29,43 @@ void main() {
     expect(await store.db.query('conversations'), isEmpty);
     expect(await store.db.query('messages'), isEmpty);
   });
+  test(
+    'upgrade from schema 1 retains saved history and creates new tables',
+    () async {
+      final temp = await Directory.systemTemp.createTemp('zeus_migration_');
+      addTearDown(() => temp.delete(recursive: true));
+      final path = '${temp.path}/legacy.db';
+      final legacy = await databaseFactoryFfi.openDatabase(
+        path,
+        options: OpenDatabaseOptions(version: 1, onCreate: LocalStore.migrate),
+      );
+      await legacy.insert('conversations', {
+        'id': 'original',
+        'title': 'Existing chat',
+        'created_at': 1,
+        'updated_at': 2,
+      });
+      await legacy.insert('messages', {
+        'id': 'original-message',
+        'conversation_id': 'original',
+        'ordinal': 1,
+        'role': 'user',
+        'content': 'Saved text',
+        'status': 'completed',
+        'created_at': 1,
+      });
+      await legacy.close();
+      final upgraded = await LocalStore.open(
+        factory: databaseFactoryFfi,
+        name: path,
+      );
+      addTearDown(upgraded.close);
+      expect(
+        (await upgraded.db.query('messages')).single['content'],
+        'Saved text',
+      );
+      expect(await upgraded.db.query('attachments'), isEmpty);
+      expect(await upgraded.db.query('projects'), isEmpty);
+    },
+  );
 }

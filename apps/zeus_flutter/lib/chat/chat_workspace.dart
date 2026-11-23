@@ -818,34 +818,43 @@ class _ChatWorkspaceState extends State<ChatWorkspace> {
           ),
         ),
         Expanded(
-          child: ListView(
+          child: ListView.builder(
             controller: _scroll,
             padding: const EdgeInsets.fromLTRB(14, 6, 14, 14),
-            children: [
-              for (final message in _messages)
-                _message(context, thread, message),
-              if (active?.prompt case final prompt?)
-                Align(
+            itemCount:
+                _messages.length +
+                (active == null
+                    ? 0
+                    : active.prompt == null
+                    ? 1
+                    : 2),
+            itemBuilder: (context, index) {
+              if (index < _messages.length) {
+                return _message(context, thread, _messages[index]);
+              }
+              if (active?.prompt case final prompt?
+                  when index == _messages.length) {
+                return Align(
                   alignment: AlignmentDirectional.centerEnd,
                   child: _bubble(context, prompt, user: true),
+                );
+              }
+              return Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: _bubble(
+                  context,
+                  active!.text.isEmpty
+                      ? localize(
+                          context,
+                          'Waiting for the model…',
+                          'بانتظار النموذج…',
+                        )
+                      : active.text,
+                  user: false,
+                  footer: active.summary.isEmpty ? null : active.summary,
                 ),
-              if (active != null)
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: _bubble(
-                    context,
-                    active.text.isEmpty
-                        ? localize(
-                            context,
-                            'Waiting for the model…',
-                            'بانتظار النموذج…',
-                          )
-                        : active.text,
-                    user: false,
-                    footer: active.summary.isNotEmpty ? active.summary : null,
-                  ),
-                ),
-            ],
+              );
+            },
           ),
         ),
         Padding(

@@ -60,8 +60,9 @@ class _TemporaryChatState extends State<TemporaryChat> {
           );
         }
         final runtime = snapshot.data;
-        if (runtime == null)
+        if (runtime == null) {
           return const Center(child: CircularProgressIndicator());
+        }
         return Column(
           children: [
             Padding(

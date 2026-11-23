@@ -31,6 +31,8 @@ class _ZeusAppState extends State<ZeusApp> {
   ThemeMode _themeMode = ThemeMode.dark;
   Locale _locale = const Locale('ar');
   bool _glassEnabled = true;
+  LiquidGlassQuality _glassQuality = LiquidGlassQuality.standard;
+  bool _reduceMotion = false;
   bool _onboarded = false;
   bool _storageError = false;
   LocalStore? _store;
@@ -64,6 +66,10 @@ class _ZeusAppState extends State<ZeusApp> {
         };
         _locale = Locale(preferences['locale'] == 'en' ? 'en' : 'ar');
         _glassEnabled = preferences['glass'] != 'false';
+        _glassQuality = preferences['glass_quality'] == 'ultra'
+            ? LiquidGlassQuality.ultra
+            : LiquidGlassQuality.standard;
+        _reduceMotion = preferences['reduce_motion'] == 'true';
         _onboarded = preferences['onboarded'] == 'true';
         _storageError = false;
       });
@@ -103,14 +109,22 @@ class _ZeusAppState extends State<ZeusApp> {
       locale: _locale,
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       supportedLocales: const [Locale('ar'), Locale('en')],
-      builder: (context, child) => LiquidGlassScope(
-        enabled: _glassEnabled,
-        quality: LiquidGlassQuality.standard,
-        child: LiquidGlassHost(
-          enabled: _glassEnabled,
-          child: LiquidGlassGroup(child: child!),
-        ),
-      ),
+      builder: (context, child) {
+        final media = MediaQuery.of(context);
+        return MediaQuery(
+          data: media.copyWith(
+            disableAnimations: media.disableAnimations || _reduceMotion,
+          ),
+          child: LiquidGlassScope(
+            enabled: _glassEnabled,
+            quality: _glassQuality,
+            child: LiquidGlassHost(
+              enabled: _glassEnabled,
+              child: LiquidGlassGroup(child: child!),
+            ),
+          ),
+        );
+      },
       home: store == null || _storageError
           ? Scaffold(
               body: Center(
@@ -136,6 +150,15 @@ class _ZeusAppState extends State<ZeusApp> {
               ),
             )
           : ZeusShell(
+              glassQuality: _glassQuality,
+              reduceMotion: _reduceMotion,
+              onGlassQualityChanged: (value) => _save(
+                'glass_quality',
+                value.name,
+                () => _glassQuality = value,
+              ),
+              onReduceMotionChanged: (value) =>
+                  _save('reduce_motion', '$value', () => _reduceMotion = value),
               glassEnabled: _glassEnabled,
               themeMode: _themeMode,
               locale: _locale,

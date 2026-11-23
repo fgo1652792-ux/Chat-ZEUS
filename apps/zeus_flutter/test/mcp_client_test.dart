@@ -17,8 +17,9 @@ void main() {
         if (method != 'initialize') {
           expect(request.headers['mcp-session-id'], 'fixture-session');
         }
-        if (method == 'notifications/initialized')
+        if (method == 'notifications/initialized') {
           return http.Response('', 202);
+        }
         final result = switch (method) {
           'initialize' => {'protocolVersion': '2025-06-18'},
           'tools/list' => {

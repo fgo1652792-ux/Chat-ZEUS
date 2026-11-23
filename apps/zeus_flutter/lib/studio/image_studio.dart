@@ -37,7 +37,7 @@ class _ImageStudioState extends State<ImageStudio> {
   String? _provider;
   bool _busy = false;
   StudioAction _action = StudioAction.generate;
-  late Future<List<ProviderConnection>> _providers = _loadProviders();
+  late final Future<List<ProviderConnection>> _providers = _loadProviders();
   late Future<List<Map<String, Object?>>> _gallery = _loadGallery();
 
   Future<List<ProviderConnection>> _loadProviders() async =>
@@ -71,8 +71,9 @@ class _ImageStudioState extends State<ImageStudio> {
         ],
       );
       if (picked == null || !mounted) return;
-      if (await picked.length() > 8 * 1024 * 1024)
+      if (await picked.length() > 8 * 1024 * 1024) {
         throw const FormatException();
+      }
       final content = await picked.readAsBytes();
       if (content.length > 8 * 1024 * 1024 ||
           ImageApi.imageType(content) == null) {
@@ -86,7 +87,7 @@ class _ImageStudioState extends State<ImageStudio> {
         });
       }
     } catch (_) {
-      if (mounted)
+      if (mounted) {
         setState(
           () => _error = localize(
             context,
@@ -94,6 +95,7 @@ class _ImageStudioState extends State<ImageStudio> {
             'اختر صورة PNG أو JPEG حتى 8 ميغابايت.',
           ),
         );
+      }
     }
   }
 
@@ -121,7 +123,7 @@ class _ImageStudioState extends State<ImageStudio> {
     try {
       final key = await widget.repository.credentials.read(provider);
       if (key == null || key.isEmpty) {
-        if (mounted)
+        if (mounted) {
           setState(
             () => _error = localize(
               context,
@@ -129,6 +131,7 @@ class _ImageStudioState extends State<ImageStudio> {
               'أضف مفتاح OpenAI في المزوّدين.',
             ),
           );
+        }
         return;
       }
       final result = await widget.api.request(
@@ -172,7 +175,7 @@ class _ImageStudioState extends State<ImageStudio> {
         );
       }
     } catch (_) {
-      if (mounted)
+      if (mounted) {
         setState(
           () => _error = localize(
             context,
@@ -180,6 +183,7 @@ class _ImageStudioState extends State<ImageStudio> {
             'تعذّر إكمال طلب الصورة.',
           ),
         );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -229,8 +233,9 @@ class _ImageStudioState extends State<ImageStudio> {
             FutureBuilder(
               future: _providers,
               builder: (context, snapshot) {
-                if (snapshot.connectionState != ConnectionState.done)
+                if (snapshot.connectionState != ConnectionState.done) {
                   return const LinearProgressIndicator();
+                }
                 final providers = snapshot.data ?? const [];
                 if (providers.isEmpty) {
                   return Text(

@@ -17,6 +17,10 @@ class ZeusShell extends StatefulWidget {
   const ZeusShell({
     super.key,
     required this.glassEnabled,
+    required this.glassQuality,
+    required this.reduceMotion,
+    required this.onGlassQualityChanged,
+    required this.onReduceMotionChanged,
     required this.themeMode,
     required this.locale,
     required this.onboarded,
@@ -28,6 +32,10 @@ class ZeusShell extends StatefulWidget {
   });
 
   final bool glassEnabled;
+  final LiquidGlassQuality glassQuality;
+  final bool reduceMotion;
+  final ValueChanged<LiquidGlassQuality> onGlassQualityChanged;
+  final ValueChanged<bool> onReduceMotionChanged;
   final ThemeMode themeMode;
   final Locale locale;
   final bool onboarded;
@@ -287,6 +295,36 @@ class _Settings extends StatelessWidget {
                       ),
                       value: shell.glassEnabled,
                       onChanged: shell.onGlassChanged,
+                    ),
+                    ListTile(
+                      title: Text(
+                        localize(context, 'Glass quality', 'جودة الزجاج'),
+                      ),
+                      trailing: DropdownButton<LiquidGlassQuality>(
+                        value: shell.glassQuality,
+                        onChanged: shell.glassEnabled
+                            ? (value) => shell.onGlassQualityChanged(value!)
+                            : null,
+                        items: [
+                          DropdownMenuItem(
+                            value: LiquidGlassQuality.standard,
+                            child: Text(
+                              localize(context, 'Standard', 'قياسية'),
+                            ),
+                          ),
+                          DropdownMenuItem(
+                            value: LiquidGlassQuality.ultra,
+                            child: Text(localize(context, 'Ultra', 'فائقة')),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SwitchListTile(
+                      value: shell.reduceMotion,
+                      onChanged: shell.onReduceMotionChanged,
+                      title: Text(
+                        localize(context, 'Reduce motion', 'تقليل الحركة'),
+                      ),
                     ),
                     ListTile(
                       title: Text(localize(context, 'Appearance', 'المظهر')),

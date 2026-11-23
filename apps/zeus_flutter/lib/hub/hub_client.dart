@@ -82,14 +82,16 @@ class HubClient {
       await restore(refreshToken!);
       return request(method, path, data: data, retry: false);
     }
-    if (result.statusCode < 200 || result.statusCode >= 300)
+    if (result.statusCode < 200 || result.statusCode >= 300) {
       throw HubException(result.statusCode);
+    }
     if (result.statusCode == 204) return const {};
     final body = await result.stream
         .timeout(const Duration(seconds: 20))
         .fold<List<int>>([], (all, chunk) {
-          if (all.length + chunk.length > 4 * 1024 * 1024)
+          if (all.length + chunk.length > 4 * 1024 * 1024) {
             throw const FormatException('Hub response is too large.');
+          }
           return all..addAll(chunk);
         });
     return jsonDecode(utf8.decode(body)) as Map<String, dynamic>;

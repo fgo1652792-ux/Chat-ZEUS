@@ -82,7 +82,7 @@ class _HubScreenState extends State<HubScreen> {
     try {
       await action();
     } on HubException catch (error) {
-      if (mounted)
+      if (mounted) {
         setState(
           () => _feedback = localize(
             context,
@@ -90,8 +90,9 @@ class _HubScreenState extends State<HubScreen> {
             'أعاد الخادم حالة HTTP ${error.status}.',
           ),
         );
+      }
     } catch (_) {
-      if (mounted)
+      if (mounted) {
         setState(
           () => _feedback = localize(
             context,
@@ -99,6 +100,7 @@ class _HubScreenState extends State<HubScreen> {
             'تحقق من عنوان الخادم وإعدادات الاتصال.',
           ),
         );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -111,7 +113,7 @@ class _HubScreenState extends State<HubScreen> {
       if (restore) {
         final token = await widget.credentials.read(_profileKey(endpoint));
         if (token == null) {
-          if (mounted)
+          if (mounted) {
             setState(
               () => _feedback = localize(
                 context,
@@ -119,6 +121,7 @@ class _HubScreenState extends State<HubScreen> {
                 'لا توجد جلسة محفوظة لهذا الحساب.',
               ),
             );
+          }
           return;
         }
         await hub.restore(token);
@@ -160,8 +163,9 @@ class _HubScreenState extends State<HubScreen> {
     final hub = _hub!;
     final remote = await hub.request('POST', 'sync/batch', data: {});
     final jobList = await hub.request('GET', 'jobs');
-    if (_remember)
+    if (_remember) {
       await widget.credentials.write(_profileKey(hub.base), hub.refreshToken!);
+    }
     if (mounted) {
       setState(() {
         _remote = (remote['changes'] as List<dynamic>)
@@ -261,7 +265,7 @@ class _HubScreenState extends State<HubScreen> {
         });
       }
       await batch.commit(noResult: true);
-      if (mounted)
+      if (mounted) {
         setState(
           () => _feedback = localize(
             context,
@@ -269,6 +273,7 @@ class _HubScreenState extends State<HubScreen> {
             'استُوردت المحادثة محليًا.',
           ),
         );
+      }
     });
     await _loadLocal();
   }

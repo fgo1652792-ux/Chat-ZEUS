@@ -51,9 +51,7 @@ class McpClient {
     final visited = <String>{};
     String? cursor;
     do {
-      final results = await _send('tools/list', {
-        if (cursor != null) 'cursor': cursor,
-      });
+      final results = await _send('tools/list', {'cursor': ?cursor});
       for (final item
           in (results['tools'] as List).whereType<Map<String, dynamic>>()) {
         tools.add(
@@ -101,8 +99,8 @@ class McpClient {
         'content-type': 'application/json',
         'accept': 'application/json, text/event-stream',
         if (bearer?.isNotEmpty == true) 'authorization': 'Bearer $bearer',
-        if (_session != null) 'mcp-session-id': _session!,
-        if (_version != null) 'mcp-protocol-version': _version!,
+        'mcp-session-id': ?_session,
+        'mcp-protocol-version': ?_version,
       })
       ..body = jsonEncode({
         'jsonrpc': '2.0',
@@ -145,8 +143,9 @@ class McpClient {
     var length = 0;
     await for (final segment in input) {
       length += segment.length;
-      if (length > 1024 * 1024)
+      if (length > 1024 * 1024) {
         throw const FormatException('MCP result exceeded the response limit.');
+      }
       yield segment;
     }
   }
